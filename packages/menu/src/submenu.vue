@@ -147,101 +147,6 @@
         return isFirstLevel;
       }
     },
-    methods: {
-      handleCollapseToggle(value) {
-        if (value) {
-          this.initPopper();
-        } else {
-          this.doDestroy();
-        }
-      },
-      addItem(item) {
-        this.$set(this.items, item.index, item);
-      },
-      removeItem(item) {
-        delete this.items[item.index];
-      },
-      addSubmenu(item) {
-        this.$set(this.submenus, item.index, item);
-      },
-      removeSubmenu(item) {
-        delete this.submenus[item.index];
-      },
-      handleClick() {
-        const { rootMenu, disabled } = this;
-        if (
-          (rootMenu.menuTrigger === 'hover' && rootMenu.mode === 'horizontal') ||
-          (rootMenu.collapse && rootMenu.mode === 'vertical') ||
-          disabled
-        ) {
-          return;
-        }
-        this.dispatch('ElMenu', 'submenu-click', this);
-      },
-      handleMouseenter(event, showTimeout = this.showTimeout) {
-
-        if (!('ActiveXObject' in window) && event.type === 'focus' && !event.relatedTarget) {
-          return;
-        }
-        const { rootMenu, disabled } = this;
-        if (
-          (rootMenu.menuTrigger === 'click' && rootMenu.mode === 'horizontal') ||
-          (!rootMenu.collapse && rootMenu.mode === 'vertical') ||
-          disabled
-        ) {
-          return;
-        }
-        this.dispatch('ElSubmenu', 'mouse-enter-child');
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          this.rootMenu.openMenu(this.index, this.indexPath);
-        }, showTimeout);
-
-        if (this.appendToBody) {
-          this.$parent.$el.dispatchEvent(new MouseEvent('mouseenter'));
-        }
-      },
-      handleMouseleave(deepDispatch = false) {
-        const {rootMenu} = this;
-        if (
-          (rootMenu.menuTrigger === 'click' && rootMenu.mode === 'horizontal') ||
-          (!rootMenu.collapse && rootMenu.mode === 'vertical')
-        ) {
-          return;
-        }
-        this.dispatch('ElSubmenu', 'mouse-leave-child');
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          !this.mouseInChild && this.rootMenu.closeMenu(this.index);
-        }, this.hideTimeout);
-
-        if (this.appendToBody && deepDispatch) {
-          if (this.$parent.$options.name === 'ElSubmenu') {
-            this.$parent.handleMouseleave(true);
-          }
-        }
-      },
-      handleTitleMouseenter() {
-        if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return;
-        const title = this.$refs['submenu-title'];
-        title && (title.style.backgroundColor = this.rootMenu.hoverBackground);
-      },
-      handleTitleMouseleave() {
-        if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return;
-        const title = this.$refs['submenu-title'];
-        title && (title.style.backgroundColor = this.rootMenu.backgroundColor || '');
-      },
-      updatePlacement() {
-        this.currentPlacement = this.mode === 'horizontal' && this.isFirstLevel
-          ? 'bottom-start'
-          : 'right-start';
-      },
-      initPopper() {
-        this.referenceElm = this.$el;
-        this.popperElm = this.$refs.menu;
-        this.updatePlacement();
-      }
-    },
     created() {
       this.$on('toggle-collapse', this.handleCollapseToggle);
       this.$on('mouse-enter-child', () => {
@@ -344,6 +249,101 @@
           {this.isMenuPopup ? popupMenu : inlineMenu}
         </li>
       );
+    },
+    methods: {
+      handleCollapseToggle(value) {
+        if (value) {
+          this.initPopper();
+        } else {
+          this.doDestroy();
+        }
+      },
+      addItem(item) {
+        this.$set(this.items, item.index, item);
+      },
+      removeItem(item) {
+        delete this.items[item.index];
+      },
+      addSubmenu(item) {
+        this.$set(this.submenus, item.index, item);
+      },
+      removeSubmenu(item) {
+        delete this.submenus[item.index];
+      },
+      handleClick() {
+        const { rootMenu, disabled } = this;
+        if (
+          (rootMenu.menuTrigger === 'hover' && rootMenu.mode === 'horizontal') ||
+          (rootMenu.collapse && rootMenu.mode === 'vertical') ||
+          disabled
+        ) {
+          return;
+        }
+        this.dispatch('ElMenu', 'submenu-click', this);
+      },
+      handleMouseenter(event, showTimeout = this.showTimeout) {
+
+        if (!('ActiveXObject' in window) && event.type === 'focus' && !event.relatedTarget) {
+          return;
+        }
+        const { rootMenu, disabled } = this;
+        if (
+          (rootMenu.menuTrigger === 'click' && rootMenu.mode === 'horizontal') ||
+          (!rootMenu.collapse && rootMenu.mode === 'vertical') ||
+          disabled
+        ) {
+          return;
+        }
+        this.dispatch('ElSubmenu', 'mouse-enter-child');
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.rootMenu.openMenu(this.index, this.indexPath);
+        }, showTimeout);
+
+        if (this.appendToBody) {
+          this.$parent.$el.dispatchEvent(new MouseEvent('mouseenter'));
+        }
+      },
+      handleMouseleave(deepDispatch = false) {
+        const {rootMenu} = this;
+        if (
+          (rootMenu.menuTrigger === 'click' && rootMenu.mode === 'horizontal') ||
+          (!rootMenu.collapse && rootMenu.mode === 'vertical')
+        ) {
+          return;
+        }
+        this.dispatch('ElSubmenu', 'mouse-leave-child');
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          !this.mouseInChild && this.rootMenu.closeMenu(this.index);
+        }, this.hideTimeout);
+
+        if (this.appendToBody && deepDispatch) {
+          if (this.$parent.$options.name === 'ElSubmenu') {
+            this.$parent.handleMouseleave(true);
+          }
+        }
+      },
+      handleTitleMouseenter() {
+        if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return;
+        const title = this.$refs['submenu-title'];
+        title && (title.style.backgroundColor = this.rootMenu.hoverBackground);
+      },
+      handleTitleMouseleave() {
+        if (this.mode === 'horizontal' && !this.rootMenu.backgroundColor) return;
+        const title = this.$refs['submenu-title'];
+        title && (title.style.backgroundColor = this.rootMenu.backgroundColor || '');
+      },
+      updatePlacement() {
+        this.currentPlacement = this.mode === 'horizontal' && this.isFirstLevel
+          ? 'bottom-start'
+          : 'right-start';
+      },
+      initPopper() {
+        this.referenceElm = this.$el;
+        this.popperElm = this.$refs.menu;
+        this.updatePlacement();
+      }
     }
   };
 </script>

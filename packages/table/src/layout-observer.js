@@ -33,9 +33,11 @@ export default {
   },
 
   methods: {
+    // 控制 col(列)的宽度(比如拖动宽度),  监听 合并单元格
     onColumnsChange(layout) {
       const cols = this.$el.querySelectorAll('colgroup > col');
       if (!cols.length) return;
+      // 整合 合并单元格
       const flattenColumns = layout.getFlattenColumns();
       const columnsMap = {};
       flattenColumns.forEach((column) => {

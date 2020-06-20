@@ -2,6 +2,11 @@ const { compileTemplate } = require('@vue/component-compiler-utils');
 const compiler = require('vue-template-compiler');
 
 function stripScript(content) {
+  // content = '     <script> var a = 123 </script>'
+  // content.match(/<(script)>([\s\S]+)<\/\1>/);
+  // 0: "<script> var a = 123 </script>"
+  // 1: "script"
+  // 2: " var a = 123 "
   const result = content.match(/<(script)>([\s\S]+)<\/\1>/);
   return result && result[2] ? result[2].trim() : '';
 }
@@ -17,6 +22,9 @@ function stripTemplate(content) {
   if (!content) {
     return content;
   }
+  // content = '     <script> var a = 123 </script>'
+  // content.replace(/<(script|style)[\s\S]+<\/\1>/g, '').trim();
+  // 结果: ""
   return content.replace(/<(script|style)[\s\S]+<\/\1>/g, '').trim();
 }
 
@@ -49,9 +57,38 @@ function genInlineComponentText(template, script) {
         '\n'
     );
   }
+  // 用vue-loader提供的方法, 把我们的模板渲染成 底层 render 可以渲染的格式,  例如:
+  // var render = function() {
+  //   var _vm = this
+  //   var _h = _vm.$createElement
+  //   var _c = _vm._self._c || _h
+  //   return _c(
+  //     "div",
+  //     [
+  //       [
+  //         _c(
+  //           "el-popconfirm",
+  //           { attrs: { title: "这是一段内容确定删除吗？" } },
+  //           [
+  //             _c(
+  //               "el-button",
+  //               { attrs: { slot: "reference" }, slot: "reference" },
+  //               [_vm._v("删除")]
+  //             )
+  //           ],
+  //           1
+  //         )
+  //       ]
+  //     ],
+  //     2
+  //   )
+  // }
+  // var staticRenderFns = []
+  // render._withStripped = true
   let demoComponentContent = `
     ${compiled.code}
   `;
+  // console.log(444444444, demoComponentContent)
   // todo: 这里采用了硬编码有待改进
   script = script.trim();
   if (script) {
@@ -59,6 +96,7 @@ function genInlineComponentText(template, script) {
   } else {
     script = 'const democomponentExport = {}';
   }
+  // console.log(55555555555, script)
   demoComponentContent = `(function() {
     ${demoComponentContent}
     ${script}

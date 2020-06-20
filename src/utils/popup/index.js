@@ -109,6 +109,7 @@ export default {
       }
     },
 
+    // 创建model(遮罩)层, 及model层事件
     doOpen(props) {
       if (this.$isServer) return;
       if (this.willOpen && !this.willOpen()) return;
@@ -130,7 +131,11 @@ export default {
           PopupManager.closeModal(this._popupId);
           this._closing = false;
         }
+
+        // 初始化model   1. addClass  2. appendChild
         PopupManager.openModal(this._popupId, PopupManager.nextZIndex(), this.modalAppendToBody ? undefined : dom, props.modalClass, props.modalFade);
+
+        // lockScroll 锁定的情况
         if (props.lockScroll) {
           this.withoutHiddenClass = !hasClass(document.body, 'el-popup-parent--hidden');
           if (this.withoutHiddenClass) {

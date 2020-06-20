@@ -1,0 +1,498 @@
+<h2 id="popconfirm-qi-pao-que-ren-kuang"><a class="header-anchor" href="#popconfirm-qi-pao-que-ren-kuang">¶</a>
+    Popconfirm 气泡确认框</h2>
+<p>点击元素，弹出气泡确认框。</p>
+<h3 id="ji-chu-yong-fa"><a class="header-anchor" href="#ji-chu-yong-fa">¶</a> 基础用法</h3>
+<p>Popconfirm 的属性与 Popover 很类似，因此对于重复属性，请参考 Popover 的文档，在此文档中不做详尽解释。</p>
+<demo-block>
+    <div>
+        <p>在 Popconfirm 中，只有 <code>title</code> 属性可用，<code>content</code> 属性不会被展示。</p>
+    </div>
+    <!--element-demo: <template>
+<el-popconfirm
+  title="这是一段内容确定删除吗？"
+>
+  <el-button slot="reference">删除</el-button>
+</el-popconfirm>
+</template>
+:element-demo-->
+    <template slot="highlight">
+        <pre v-pre><code class="html">&lt;template&gt;
+&lt;el-popconfirm
+  title=&quot;这是一段内容确定删除吗？&quot;
+&gt;
+  &lt;el-button slot=&quot;reference&quot;&gt;删除&lt;/el-button&gt;
+&lt;/el-popconfirm&gt;
+&lt;/template&gt;
+</code></pre></template>
+</demo-block>
+<h3 id="zi-ding-yi"><a class="header-anchor" href="#zi-ding-yi">¶</a> 自定义</h3>
+<p>可以在 Popconfirm 中自定义内容。</p>
+<demo-block>
+
+    <!--element-demo: <template>
+<el-popconfirm
+  confirmButtonText='好的'
+  cancelButtonText='不用了'
+  icon="el-icon-info"
+  iconColor="red"
+  title="这是一段内容确定删除吗？"
+>
+  <el-button slot="reference">删除</el-button>
+</el-popconfirm>
+</template>
+:element-demo-->
+    <template slot="highlight">
+        <pre v-pre><code class="html">&lt;template&gt;
+&lt;el-popconfirm
+  confirmButtonText='好的'
+  cancelButtonText='不用了'
+  icon=&quot;el-icon-info&quot;
+  iconColor=&quot;red&quot;
+  title=&quot;这是一段内容确定删除吗？&quot;
+&gt;
+  &lt;el-button slot=&quot;reference&quot;&gt;删除&lt;/el-button&gt;
+&lt;/el-popconfirm&gt;
+&lt;/template&gt;
+</code></pre></template></demo-block>
+<h3 id="attributes"><a class="header-anchor" href="#attributes">¶</a> Attributes</h3>
+<table>
+    <thead>
+        <tr>
+            <th>参数</th>
+            <th>说明</th>
+            <th>类型</th>
+            <th>可选值</th>
+            <th>默认值</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>title</td>
+            <td>标题</td>
+            <td>String</td>
+            <td>—</td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>confirmButtonText</td>
+            <td>确认按钮文字</td>
+            <td>String</td>
+            <td>—</td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>cancelButtonText</td>
+            <td>取消按钮文字</td>
+            <td>String</td>
+            <td>—</td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>confirmButtonType</td>
+            <td>确认按钮类型</td>
+            <td>String</td>
+            <td>—</td>
+            <td>Primary</td>
+        </tr>
+        <tr>
+            <td>cancelButtonType</td>
+            <td>取消按钮类型</td>
+            <td>String</td>
+            <td>—</td>
+            <td>Text</td>
+        </tr>
+        <tr>
+            <td>icon</td>
+            <td>Icon</td>
+            <td>String</td>
+            <td>—</td>
+            <td>el-icon-question</td>
+        </tr>
+        <tr>
+            <td>iconColor</td>
+            <td>Icon 颜色</td>
+            <td>String</td>
+            <td>—</td>
+            <td>#f90</td>
+        </tr>
+        <tr>
+            <td>hideIcon</td>
+            <td>是否隐藏 Icon</td>
+            <td>Boolean</td>
+            <td>—</td>
+            <td>false</td>
+        </tr>
+    </tbody>
+</table>
+<h3 id="slot"><a class="header-anchor" href="#slot">¶</a> Slot</h3>
+<table>
+    <thead>
+        <tr>
+            <th>参数</th>
+            <th>说明</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>reference</td>
+            <td>触发 Popconfirm 显示的 HTML 元素</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+<!--
+11111111
+"element-demo0":
+(function() {
+
+    var render = function() {
+      var _vm = this
+      var _h = _vm.$createElement
+      var _c = _vm._self._c || _h
+      return _c(
+        "div",
+        [
+          [
+            _c(
+              "el-popconfirm",
+              { attrs: { title: "这是一段内容确定删除吗？" } },
+              [
+                _c(
+                  "el-button",
+                  { attrs: { slot: "reference" }, slot: "reference" },
+                  [_vm._v("删除")]
+                )
+              ],
+              1
+            )
+          ]
+        ],
+        2
+      )
+    }
+  var staticRenderFns = []
+  render._withStripped = true
+  const democomponentExport = {}
+  return {
+    render,
+    staticRenderFns,
+    ...democomponentExport
+  }
+})(),
+
+"element-demo1":
+(function() {
+    var render = function() {
+      var _vm = this
+      var _h = _vm.$createElement
+      var _c = _vm._self._c || _h
+      return _c(
+        "div",
+        [
+          [
+            _c(
+              "el-popconfirm",
+              {
+                attrs: {
+                  confirmButtonText: "好的",
+                  cancelButtonText: "不用了",
+                  icon: "el-icon-info",
+                  iconColor: "red",
+                  title: "这是一段内容确定删除吗？"
+                }
+              },
+              [
+                _c(
+                  "el-button",
+                  { attrs: { slot: "reference" }, slot: "reference" },
+                  [_vm._v("删除")]
+                )
+              ],
+              1
+            )
+          ]
+        ],
+        2
+      )
+    }
+  var staticRenderFns = []
+  render._withStripped = true
+  const democomponentExport = {}
+  return {
+    render,
+    staticRenderFns,
+    ...democomponentExport
+  }
+})(),
+
+
+
+
+
+2222222
+<script>
+export default {
+  name: 'component-doc',
+  components: {
+    "element-demo0": (function() {
+      var render = function() {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c(
+          "div",
+          [
+            [
+              _c(
+                "el-popconfirm",
+                { attrs: { title: "这是一段内容确定删除吗？" } },
+                [
+                  _c(
+                    "el-button",
+                    { attrs: { slot: "reference" }, slot: "reference" },
+                    [_vm._v("删除")]
+                  )
+                ],
+                1
+              )
+            ]
+          ],
+          2
+        )
+      }
+      var staticRenderFns = []
+      render._withStripped = true
+
+
+      const democomponentExport = {}
+      return {
+        render,
+        staticRenderFns,
+        ...democomponentExport
+      }
+    })(),
+
+   "element-demo1": (function() {
+      var render = function() {
+        var _vm = this
+        var _h = _vm.$createElement
+        var _c = _vm._self._c || _h
+        return _c(
+          "div",
+          [
+            [
+              _c(
+                "el-popconfirm",
+                {
+                  attrs: {
+                    confirmButtonText: "好的",
+                    cancelButtonText: "不用了",
+                    icon: "el-icon-info",
+                    iconColor: "red",
+                    title: "这是一段内容确定删除吗？"
+                  }
+                },
+                [
+                  _c(
+                    "el-button",
+                    { attrs: { slot: "reference" }, slot: "reference" },
+                    [_vm._v("删除")]
+                  )
+                ],
+                1
+              )
+            ]
+          ],
+          2
+        )
+      }
+      var staticRenderFns = []
+      render._withStripped = true
+
+
+      const democomponentExport = {}
+      return {
+        render,
+        staticRenderFns,
+        ...democomponentExport
+      }
+   })(),
+ }
+}
+</script>
+
+
+
+
+
+
+
+
+333333 [
+  '<h2 id="popconfirm-qi-pao-que-ren-kuang"><a class="header-anchor" href="#popconfirm-qi-pao-que-ren-kuang">¶</a> Popconfirm 气泡确认框</h2>\n' +
+    '<p>点击元素，弹出气泡确认框。</p>\n' +
+    '<h3 id="ji-chu-yong-fa"><a class="header-anchor" href="#ji-chu-yong-fa">¶</a> 基础用法</h3>\n' +
+    '<p>Popconfirm 的属性与 Popover 很类似，因此对于重复属性，请参考 Popover 的文档，在此文档中不做详尽解释。</p>\n' +
+    '<demo-block>\n' +
+    '        <div><p>在 Popconfirm 中，只有 <code>title</code> 属性可用，<code>content</code> 属性不会被展示。</p>\n' +
+    '</div>\n' +
+    '        ',
+
+  '<template slot="source"><element-demo0 /></template>',
+
+  '\n' +
+    '        <template slot="highlight"><pre v-pre><code class="html">&lt;template&gt;\n' +
+    '&lt;el-popconfirm\n' +
+    '  title=&quot;这是一段内容确定删除吗？&quot;\n' +
+    '&gt;\n' +
+    '  &lt;el-button slot=&quot;reference&quot;&gt;删除&lt;/el-button&gt;\n' +
+    '&lt;/el-popconfirm&gt;\n' +
+    '&lt;/template&gt;\n' +
+    '</code></pre></template></demo-block><h3 id="zi-ding-yi"><a class="header-anchor" href="#zi-ding-yi">¶</a> 自定义</h3>\n' +
+    '<p>可以在 Popconfirm 中自定义内容。</p>\n' +
+    '<demo-block>\n' +
+    '        \n' +
+    '        ',
+
+  '<template slot="source"><element-demo1 /></template>',
+
+  '\n' +
+    '        <template slot="highlight"><pre v-pre><code class="html">&lt;template&gt;\n' +
+    '&lt;el-popconfirm\n' +
+    "  confirmButtonText='好的'\n" +
+    "  cancelButtonText='不用了'\n" +
+    '  icon=&quot;el-icon-info&quot;\n' +
+    '  iconColor=&quot;red&quot;\n' +
+    '  title=&quot;这是一段内容确定删除吗？&quot;\n' +
+    '&gt;\n' +
+    '  &lt;el-button slot=&quot;reference&quot;&gt;删除&lt;/el-button&gt;\n' +
+    '&lt;/el-popconfirm&gt;\n' +
+    '&lt;/template&gt;\n' +
+    '</code></pre></template></demo-block><h3 id="attributes"><a class="header-anchor" href="#attributes">¶</a> Attributes</h3>\n' +
+    '<table>\n' +
+    '<thead>\n' +
+    '<tr>\n' +
+    '<th>参数</th>\n' +
+    '<th>说明</th>\n' +
+    '<th>类型</th>\n' +
+    '<th>可选值</th>\n' +
+    '<th>默认值</th>\n' +
+    '</tr>\n' +
+    '</thead>\n' +
+    '<tbody>\n' +
+    '<tr>\n' +
+    '<td>title</td>\n' +
+    '<td>标题</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>—</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>confirmButtonText</td>\n' +
+    '<td>确认按钮文字</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>—</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>cancelButtonText</td>\n' +
+    '<td>取消按钮文字</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>—</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>confirmButtonType</td>\n' +
+    '<td>确认按钮类型</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>Primary</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>cancelButtonType</td>\n' +
+    '<td>取消按钮类型</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>Text</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>icon</td>\n' +
+    '<td>Icon</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>el-icon-question</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>iconColor</td>\n' +
+    '<td>Icon 颜色</td>\n' +
+    '<td>String</td>\n' +
+    '<td>—</td>\n' +
+    '<td>#f90</td>\n' +
+    '</tr>\n' +
+    '<tr>\n' +
+    '<td>hideIcon</td>\n' +
+    '<td>是否隐藏 Icon</td>\n' +
+    '<td>Boolean</td>\n' +
+    '<td>—</td>\n' +
+    '<td>false</td>\n' +
+    '</tr>\n' +
+    '</tbody>\n' +
+    '</table>\n' +
+    '<h3 id="slot"><a class="header-anchor" href="#slot">¶</a> Slot</h3>\n' +
+    '<table>\n' +
+    '<thead>\n' +
+    '<tr>\n' +
+    '<th>参数</th>\n' +
+    '<th>说明</th>\n' +
+    '</tr>\n' +
+    '</thead>\n' +
+    '<tbody>\n' +
+    '<tr>\n' +
+    '<td>reference</td>\n' +
+    '<td>触发 Popconfirm 显示的 HTML 元素</td>\n' +
+    '</tr>\n' +
+    '</tbody>\n' +
+    '</table>\n'
+]
+
+
+
+
+
+55555555555 const democomponentExport = {}
+444444444
+    var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      [
+        _c(
+          "el-popconfirm",
+          { attrs: { title: "这是一段内容确定删除吗？" } },
+          [
+            _c(
+              "el-button",
+              { attrs: { slot: "reference" }, slot: "reference" },
+              [_vm._v("删除")]
+            )
+          ],
+          1
+        )
+      ]
+    ],
+    2
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+
+-->

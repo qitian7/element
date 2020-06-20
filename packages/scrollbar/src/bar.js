@@ -38,6 +38,10 @@ export default {
     );
   },
 
+  destroyed() {
+    off(document, 'mouseup', this.mouseUpDocumentHandler);
+  },
+
   methods: {
     clickThumbHandler(e) {
       // prevent click event of right button
@@ -84,9 +88,5 @@ export default {
       off(document, 'mousemove', this.mouseMoveDocumentHandler);
       document.onselectstart = null;
     }
-  },
-
-  destroyed() {
-    off(document, 'mouseup', this.mouseUpDocumentHandler);
   }
 };

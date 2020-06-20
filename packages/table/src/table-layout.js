@@ -75,6 +75,7 @@ class TableLayout {
     this.setHeight(value, 'max-height');
   }
 
+  // 整合 合并单元格
   getFlattenColumns() {
     const flattenColumns = [];
     const columns = this.table.columns;
@@ -133,7 +134,8 @@ class TableLayout {
   updateColumnsWidth() {
     if (Vue.prototype.$isServer) return;
     const fit = this.fit;
-    const bodyWidth = this.table.$el.clientWidth;
+    // tBody的宽度(不包括滚动条)
+    const bodyWidth = this.table.$el && this.table.$el.clientWidth;
     let bodyMinWidth = 0;
 
     const flattenColumns = this.getFlattenColumns();

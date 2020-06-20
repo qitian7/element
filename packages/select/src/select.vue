@@ -4,11 +4,13 @@
     :class="[selectSize ? 'el-select--' + selectSize : '']"
     @click.stop="toggleMenu"
     v-clickoutside="handleClose">
+    <!-- 多选 -->
     <div
       class="el-select__tags"
       v-if="multiple"
       ref="tags"
       :style="{ 'max-width': inputWidth - 32 + 'px', width: '100%' }">
+      <!--多选, 并且合并tag-->
       <span v-if="collapseTags && selected.length">
         <el-tag
           :closable="!selectDisabled"
@@ -28,6 +30,7 @@
           <span class="el-select__tags-text">+ {{ selected.length - 1 }}</span>
         </el-tag>
       </span>
+      <!--多选, 不合并, 有多少展示多少-->
       <transition-group @after-leave="resetInputHeight" v-if="!collapseTags">
         <el-tag
           v-for="item in selected"
@@ -67,6 +70,8 @@
         :style="{ 'flex-grow': '1', width: inputLength / (inputWidth - 32) + '%', 'max-width': inputWidth - 42 + 'px' }"
         ref="input">
     </div>
+
+    <!-- 单选 -->
     <el-input
       ref="reference"
       v-model="selectedLabel"
@@ -92,6 +97,12 @@
       @paste.native="debouncedOnInputChange"
       @mouseenter.native="inputHovering = true"
       @mouseleave.native="inputHovering = false">
+      <!--
+        具名插槽的用法
+        <template v-slot:prefix>
+          <span>H</span>
+        </template>
+      -->
       <template slot="prefix" v-if="$slots.prefix">
         <slot name="prefix"></slot>
       </template>
@@ -100,6 +111,8 @@
         <i v-if="showClose" class="el-select__caret el-input__icon el-icon-circle-close" @click="handleClearClick"></i>
       </template>
     </el-input>
+
+    <!-- 弹出窗里的每个option -->
     <transition
       name="el-zoom-in-top"
       @before-enter="handleMenuEnter"
@@ -298,7 +311,9 @@
         type: String,
         default: 'value'
       },
-      collapseTags: Boolean,
+      collapseTags: Boolean, // 把多选 合并成数字
+      // 是否将弹出框插入至 body 元素。在弹出框的定位出现问题时，可将该属性设置为 false
+      // 为什么要放在body下?  直接放到body最下面, 比插入到dom树内部, 性能会好一些(因为大部分情况下, 这种提示性的弹窗都会立马销毁掉(display:none, 原dom还在), 所以越简单越好)
       popperAppendToBody: {
         type: Boolean,
         default: true
@@ -366,8 +381,8 @@
       },
 
       visible(val) {
-        if (!val) {
-          this.broadcast('ElSelectDropdown', 'destroyPopper');
+        if (!val) { // 关闭弹窗
+          this.broadcast('ElSelectDropdown', 'destroyPopper'); // 让select组件下, 所有子组件, 只要名字是ElSelectDropdown的, 执行 destroyPopper 事件
           if (this.$refs.input) {
             this.$refs.input.blur();
           }
@@ -399,11 +414,11 @@
               this.currentPlaceholder = this.cachedPlaceHolder;
             }
           }
-        } else {
+        } else { // 打开弹窗
           this.broadcast('ElSelectDropdown', 'updatePopper');
-          if (this.filterable) {
-            this.query = this.remote ? '' : this.selectedLabel;
-            this.handleQueryChange(this.query);
+          if (this.filterable) { // 如果可以搜索, 就需要过滤
+            this.query = this.remote ? '' : this.selectedLabel; // 非远程的话, 就要控制v-model
+            this.handleQueryChange(this.query); // 处理下拉框的内容
             if (this.multiple) {
               this.$refs.input.focus();
             } else {
@@ -441,38 +456,41 @@
     },
 
     methods: {
+      // 比如拼音, 要拼完这个完整拼音才执行内容(中间不执行 composition"end"),
       handleComposition(event) {
         const text = event.target.value;
         if (event.type === 'compositionend') {
           this.isOnComposition = false;
           this.$nextTick(_ => this.handleQueryChange(text));
-        } else {
+        } else { // 还在拼拼音的过程中
           const lastCharacter = text[text.length - 1] || '';
-          this.isOnComposition = !isKorean(lastCharacter);
+          this.isOnComposition = !isKorean(lastCharacter); // 排除韩语
         }
       },
+      // 处理下拉框的内容 ---- 使用场景: 初始化|搜索功能
       handleQueryChange(val) {
         if (this.previousQuery === val || this.isOnComposition) return;
         if (
           this.previousQuery === null &&
           (typeof this.filterMethod === 'function' || typeof this.remoteMethod === 'function')
-        ) {
+        ) { // 如果有自定义的filter办法, 则return
           this.previousQuery = val;
           return;
         }
         this.previousQuery = val;
-        this.$nextTick(() => {
+        this.$nextTick(() => { // 刷新下拉框内容
           if (this.visible) this.broadcast('ElSelectDropdown', 'updatePopper');
         });
-        this.hoverIndex = -1;
+        this.hoverIndex = -1; // 去掉hover项
         if (this.multiple && this.filterable) {
           this.$nextTick(() => {
             const length = this.$refs.input.value.length * 15 + 20;
             this.inputLength = this.collapseTags ? Math.min(50, length) : length;
             this.managePlaceholder();
-            this.resetInputHeight();
+            this.resetInputHeight(); // 重新设置input的高
           });
         }
+        // 处理下拉框内容更新
         if (this.remote && typeof this.remoteMethod === 'function') {
           this.hoverIndex = -1;
           this.remoteMethod(val);
@@ -485,10 +503,11 @@
           this.broadcast('ElOptionGroup', 'queryChange');
         }
         if (this.defaultFirstOption && (this.filterable || this.remote) && this.filteredOptionsCount) {
-          this.checkDefaultFirstOption();
+          this.checkDefaultFirstOption(); // 下拉框的active选项高亮控制
         }
       },
 
+      // 移动滚动条
       scrollToOption(option) {
         const target = Array.isArray(option) && option[0] ? option[0].$el : option.$el;
         if (this.$refs.popper && target) {
@@ -537,6 +556,7 @@
         return newOption;
       },
 
+      // 如果是单选, 直接给input框 加上选中数据, 否则多选是数组, 然后重新计算一下input的高
       setSelected() {
         if (!this.multiple) {
           let option = this.getOption(this.value);
@@ -607,6 +627,7 @@
 
       toggleLastOptionHitState(hit) {
         if (!Array.isArray(this.selected)) return;
+        // 多选时, 拿到最后一个多选项
         const option = this.selected[this.selected.length - 1];
         if (!option) return;
 
@@ -634,6 +655,7 @@
         }
       },
 
+      // 远程搜索的时候, 键盘按下则触发, 目的重整input的高(输入内容过多时)
       resetInputState(e) {
         if (e.keyCode !== 8) this.toggleLastOptionHitState(false);
         this.inputLength = this.$refs.input.value.length * 15 + 20;
@@ -674,6 +696,7 @@
         }, 300);
       },
 
+      // 选中option后  处理active高亮, 滚动条, 鼠标焦点
       handleOptionSelect(option, byClick) {
         if (this.multiple) {
           const value = (this.value || []).slice();
@@ -730,14 +753,15 @@
         }
       },
 
+      // 控制  visible 的 真假
       toggleMenu() {
-        if (!this.selectDisabled) {
+        if (!this.selectDisabled) { // 非禁用
           if (this.menuVisibleOnFocus) {
             this.menuVisibleOnFocus = false;
           } else {
             this.visible = !this.visible;
           }
-          if (this.visible) {
+          if (this.visible) { // 一点击, 如果是可见, 立即获得焦点
             (this.$refs.input || this.$refs.reference).focus();
           }
         }

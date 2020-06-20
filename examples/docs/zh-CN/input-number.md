@@ -1,3 +1,8 @@
+## 学习点
+1. 
+2. 
+
+
 ## InputNumber 计数器
 
 仅允许输入标准的数字值，可定义范围
@@ -172,7 +177,7 @@
 | min      | 设置计数器允许的最小值 | number | — | -Infinity |
 | max      | 设置计数器允许的最大值 | number | — | Infinity |
 | step     | 计数器步长           | number   | — | 1 |
-| step-strictly | 是否只能输入 step 的倍数 | boolean   | — | false |
+| step-strictly | 是否只能输入 step 的倍数 | number   | — | false |
 | precision| 数值精度             | number   | — | — |
 | size     | 计数器尺寸           | string   | large, small | — |
 | disabled | 是否禁用计数器        | boolean | — | false |

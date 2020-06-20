@@ -6,9 +6,10 @@ const {
 const md = require('./config');
 
 module.exports = function(source) {
-  const content = md.render(source);
+  const content = md.render(source); // 把 md格式 转换成 html格式, 例子见 ./popconfirm.html
+  // console.log('------------------------------------------', content)
 
-  const startTag = '<!--element-demo:';
+  const startTag = '<!--element-demo:'; // el全局组件解析出来的代码
   const startTagLen = startTag.length;
   const endTag = ':element-demo-->';
   const endTagLen = endTag.length;
@@ -23,9 +24,15 @@ module.exports = function(source) {
   while (commentStart !== -1 && commentEnd !== -1) {
     output.push(content.slice(start, commentStart));
 
+    // 拿到 vue 需要解析的代码: 比如: <template> <el-popconfirm ....</el-popconfirm></template>
     const commentContent = content.slice(commentStart + startTagLen, commentEnd);
+    // 去掉 script|style 标签(及里面的内容)
     const html = stripTemplate(commentContent);
+    // 只去掉script标签(保留内容)
     const script = stripScript(commentContent);
+
+    // 用vue-loader提供的方法, 把vue语法的html模板, 转成  render函数可以渲染的样子,
+    // 如 ./popconfirm.html内的 111111
     let demoComponentContent = genInlineComponentText(html, script);
     const demoComponentName = `element-demo${id}`;
     output.push(`<template slot="source"><${demoComponentName} /></template>`);
@@ -38,6 +45,7 @@ module.exports = function(source) {
     commentEnd = content.indexOf(endTag, commentStart + startTagLen);
   }
 
+  // console.log(11111111, componenetsString)
   // 仅允许在 demo 不存在时，才可以在 Markdown 中写 script 标签
   // todo: 优化这段逻辑
   let pageScript = '';
@@ -56,6 +64,8 @@ module.exports = function(source) {
   }
 
   output.push(content.slice(start));
+  // console.log(2222222, pageScript)
+  // console.log(333333, output)
   return `
     <template>
       <section class="content element-doc">

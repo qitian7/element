@@ -59,12 +59,15 @@ const registerRoute = (navConfig) => {
   let route = [];
   Object.keys(navConfig).forEach((lang, index) => {
     let navs = navConfig[lang];
+    // 点击'组件' -> 默认重定向到 "安装" 的路由: http://localhost:8086/#/zh-CN/component/installation
     route.push({
       path: `/${ lang }/component`,
       redirect: `/${ lang }/component/installation`,
       component: load(lang, 'component'),
       children: []
     });
+
+    // 根据配置文件, 形成对应的路由
     navs.forEach(nav => {
       if (nav.href) return;
       if (nav.groups) {
@@ -82,19 +85,20 @@ const registerRoute = (navConfig) => {
       }
     });
   });
+  // 加上 children
   function addRoute(page, lang, index) {
     const component = page.path === '/changelog'
       ? load(lang, 'changelog')
       : loadDocs(lang, page.path);
     let child = {
-      path: page.path.slice(1),
+      name: 'component-' + lang + (page.title || page.name),
+      component: component.default || component,
+      path: page.path.slice(1), // 去掉'/'
       meta: {
         title: page.title || page.name,
         description: page.description,
         lang
-      },
-      name: 'component-' + lang + (page.title || page.name),
-      component: component.default || component
+      }
     };
 
     route[index].children.push(child);
@@ -103,8 +107,10 @@ const registerRoute = (navConfig) => {
   return route;
 };
 
+// 此处只是拿到了 组件component 的所有路由
 let route = registerRoute(navConfig);
 
+// 写死的, 另除了component 的其他路由
 const generateMiscRoutes = function(lang) {
   let guideRoute = {
     path: `/${ lang }/guide`, // 指南
@@ -159,6 +165,7 @@ const generateMiscRoutes = function(lang) {
 };
 
 langs.forEach(lang => {
+  // 加上其他路由
   route = route.concat(generateMiscRoutes(lang.lang));
 });
 
@@ -168,6 +175,7 @@ route.push({
   component: require('./play/index.vue')
 });
 
+// 给初始路由, 带上语言信息 :  https://element.eleme.cn/#/zh-CN
 let userLanguage = localStorage.getItem('ELEMENT_LANGUAGE') || window.navigator.language || 'en-US';
 let defaultPath = '/en-US';
 if (userLanguage.indexOf('zh-') !== -1) {
@@ -178,6 +186,7 @@ if (userLanguage.indexOf('zh-') !== -1) {
   defaultPath = '/fr-FR';
 }
 
+// 如果路由是 空或者错的路由  重定向到默认语言的首页
 route = route.concat([{
   path: '/',
   redirect: defaultPath

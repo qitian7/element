@@ -1,4 +1,7 @@
 <script>
+
+// vue  jsx 的经典入门案例
+
 export default {
   name: 'ElAvatar',
 

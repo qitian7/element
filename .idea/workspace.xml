@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9c02946a-e8d7-4234-b5d9-fdb5813e7eb3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../04vue.md" beforeDir="false" afterPath="$PROJECT_DIR$/../04vue.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../04前端工程化" beforeDir="false" afterPath="$PROJECT_DIR$/../04前端工程化" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../05编程题.md" beforeDir="false" afterPath="$PROJECT_DIR$/../05编程题.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../code/vue/01.html" beforeDir="false" afterPath="$PROJECT_DIR$/../code/vue/01.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../code/vue/vue-dev/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../code/vue/vue-dev/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="element-dev" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/test/unit/specs/table.spec.js" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="ProjectId" id="1ZeonD6j6dJihPexoRSxKuSo9CM" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../code/vue/vue-router-dev" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.selected.package.eslint" value="$PROJECT_DIR$/node_modules/eslint" />
+    <property name="node.js.selected.package.standard" value="C:\Users\v_zmengzeng\Desktop\md笔记\element-dev\node_modules\eslint" />
+    <property name="nodejs_interpreter_path" value="node" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\WebStorm 2019.2.4\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9c02946a-e8d7-4234-b5d9-fdb5813e7eb3" name="Default Changelist" comment="" />
+      <created>1582951204709</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1582951204709</updated>
+      <workItem from="1582951205962" duration="136855000" />
+      <workItem from="1583576389384" duration="5432000" />
+      <workItem from="1583717810557" duration="19257000" />
+      <workItem from="1583754048029" duration="88000" />
+      <workItem from="1583754159904" duration="27221000" />
+      <workItem from="1583908314809" duration="9405000" />
+      <workItem from="1584165728599" duration="7535000" />
+      <workItem from="1584188409203" duration="2281000" />
+      <workItem from="1584240591285" duration="5206000" />
+      <workItem from="1584325884973" duration="35761000" />
+      <workItem from="1584436332006" duration="41571000" />
+      <workItem from="1584925179370" duration="10589000" />
+      <workItem from="1585209088201" duration="2271000" />
+      <workItem from="1585965220895" duration="642000" />
+      <workItem from="1587554192509" duration="1414000" />
+      <workItem from="1588055330776" duration="26163000" />
+      <workItem from="1588217817697" duration="3363000" />
+      <workItem from="1588736939584" duration="5181000" />
+      <workItem from="1589764547645" duration="613000" />
+      <workItem from="1590371420508" duration="599000" />
+      <workItem from="1590381926364" duration="2459000" />
+      <workItem from="1590975200304" duration="7155000" />
+      <workItem from="1591581077718" duration="9112000" />
+      <workItem from="1591958451379" duration="605000" />
+      <workItem from="1592184567544" duration="2705000" />
+      <workItem from="1592443152376" duration="601000" />
+      <workItem from="1592645173605" duration="1248000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/node_modules/karma/config.tpl.js" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/examples/components/search.vue</url>
+          <line>2</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/test/unit/specs/autocomplete.spec.js</url>
+          <line>549</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

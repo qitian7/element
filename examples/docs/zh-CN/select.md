@@ -1,3 +1,8 @@
+## 学习点
+1. 
+2. 
+
+
 ## Select 选择器
 
 当选项过多时，使用下拉菜单展示并选择内容。
@@ -8,7 +13,7 @@
 :::demo `v-model`的值为当前被选中的`el-option`的 value 属性值
 ```html
 <template>
-  <el-select v-model="value" placeholder="请选择">
+  <el-select v-model="value" :placeholder="请选择">
     <el-option
       v-for="item in options"
       :key="item.value"

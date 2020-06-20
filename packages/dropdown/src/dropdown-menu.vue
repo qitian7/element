@@ -6,6 +6,9 @@
   </transition>
 </template>
 <script>
+  /** 此.vue组件就是 popper层, 是一个容器, 内容物都放在<slot></slot>
+   */
+
   import Popper from 'element-ui/src/utils/vue-popper';
 
   export default {
@@ -44,6 +47,7 @@
     },
 
     mounted() {
+      // 这里ths混入了 Popper, 所以this.$el可以代表 popperElm
       this.dropdown.popperElm = this.popperElm = this.$el;
       this.referenceElm = this.dropdown.$el;
       // compatible with 2.6 new v-slot syntax

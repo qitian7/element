@@ -1,5 +1,12 @@
+
+/** 解析
+ *  echo element.eleme.io>>examples/element-ui/CNAME 作用, 把element.eleme.io写入examples/element-ui/CNAME
+ *      如 echo "Intel Galileo" >> test.txt, 把xx追加写入文件内
+ */
+
 const path = require('path');
 const webpack = require('webpack');
+// 该插件将CSS提取到单独的文件中。它为每个包含CSS的JS文件创建一个CSS文件。它支持CSS和SourceMap的按需加载。
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -15,10 +22,8 @@ const isPlay = !!process.env.PLAY_ENV;
 
 const webpackConfig = {
   mode: process.env.NODE_ENV,
-  entry: isProd ? {
-    docs: './examples/entry.js'
-  } : (isPlay ? './examples/play.js' : './examples/entry.js'),
-  output: {
+  entry: (isPlay ? './examples/play.js' : './examples/entry.js'),
+  output: { // build后的, 文件出口path
     path: path.resolve(process.cwd(), './examples/element-ui/'),
     publicPath: process.env.CI_ENV || '',
     filename: '[name].[hash:7].js',
@@ -27,11 +32,17 @@ const webpackConfig = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: config.alias,
+    /**
+     main: path.resolve(__dirname, '../src'),
+     packages: path.resolve(__dirname, '../packages'),
+     examples: path.resolve(__dirname, '../examples'),
+     'element-ui': path.resolve(__dirname, '../')
+     */
     modules: ['node_modules']
   },
   devServer: {
-    host: '0.0.0.0',
-    port: 8085,
+    host: 'localhost',
+    port: 8086,
     publicPath: '/',
     hot: true
   },
@@ -51,7 +62,7 @@ const webpackConfig = {
       },
       {
         test: /\.(jsx?|babel|es6)$/,
-        include: process.cwd(),
+        include: process.cwd(), // process.cwd() 方法返回 Node.js 进程的当前工作目录。
         exclude: config.jsexclude,
         loader: 'babel-loader'
       },
@@ -60,6 +71,7 @@ const webpackConfig = {
         loader: 'vue-loader',
         options: {
           compilerOptions: {
+            // 去掉模板标签之间的空格
             preserveWhitespace: false
           }
         }
@@ -67,7 +79,7 @@ const webpackConfig = {
       {
         test: /\.(scss|css)$/,
         use: [
-          isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+          isProd ? MiniCssExtractPlugin.loader : 'style-loader', // 将CSS提取到单独的文件中。它为每个包含CSS的JS文件创建一个CSS文件。它支持CSS和SourceMap的按需加载。
           'css-loader',
           'sass-loader'
         ]
@@ -79,6 +91,7 @@ const webpackConfig = {
             loader: 'vue-loader',
             options: {
               compilerOptions: {
+                // 去掉模板标签之间的空格
                 preserveWhitespace: false
               }
             }
@@ -102,14 +115,14 @@ const webpackConfig = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      template: './examples/index.tpl',
+      template: './examples/index.tpl', // 这个是模板, 以这个模板, 去生成filename: ./index.html
       filename: './index.html',
-      favicon: './examples/favicon.ico'
+      favicon: './examples/favicon.ico' // Adds the given(给定的) favicon  path to(输出) the output HTML
     }),
     new CopyWebpackPlugin([
       { from: 'examples/versions.json' }
     ]),
-    new ProgressBarPlugin(),
+    new ProgressBarPlugin(), // 终端显示流程
     new VueLoaderPlugin(),
     new webpack.DefinePlugin({
       'process.env.FAAS_ENV': JSON.stringify(process.env.FAAS_ENV)
@@ -120,7 +133,8 @@ const webpackConfig = {
           preserveWhitespace: false
         }
       }
-    })
+    }),
+    new MiniCssExtractPlugin()
   ],
   optimization: {
     minimizer: []

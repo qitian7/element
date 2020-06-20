@@ -54,61 +54,6 @@
       }
     },
 
-    methods: {
-      calcPaneInstances(isForceUpdate = false) {
-        if (this.$slots.default) {
-          const paneSlots = this.$slots.default.filter(vnode => vnode.tag &&
-            vnode.componentOptions && vnode.componentOptions.Ctor.options.name === 'ElTabPane');
-          // update indeed
-          const panes = paneSlots.map(({ componentInstance }) => componentInstance);
-          const panesChanged = !(panes.length === this.panes.length && panes.every((pane, index) => pane === this.panes[index]));
-          if (isForceUpdate || panesChanged) {
-            this.panes = panes;
-          }
-        } else if (this.panes.length !== 0) {
-          this.panes = [];
-        }
-      },
-      handleTabClick(tab, tabName, event) {
-        if (tab.disabled) return;
-        this.setCurrentName(tabName);
-        this.$emit('tab-click', tab, event);
-      },
-      handleTabRemove(pane, ev) {
-        if (pane.disabled) return;
-        ev.stopPropagation();
-        this.$emit('edit', pane.name, 'remove');
-        this.$emit('tab-remove', pane.name);
-      },
-      handleTabAdd() {
-        this.$emit('edit', null, 'add');
-        this.$emit('tab-add');
-      },
-      setCurrentName(value) {
-        const changeCurrentName = () => {
-          this.currentName = value;
-          this.$emit('input', value);
-        };
-        if (this.currentName !== value && this.beforeLeave) {
-          const before = this.beforeLeave(value, this.currentName);
-          if (before && before.then) {
-            before
-              .then(() => {
-                changeCurrentName();
-                this.$refs.nav && this.$refs.nav.removeFocus();
-              }, () => {
-                // https://github.com/ElemeFE/element/pull/14816
-                // ignore promise rejection in `before-leave` hook
-              });
-          } else if (before !== false) {
-            changeCurrentName();
-          }
-        } else {
-          changeCurrentName();
-        }
-      }
-    },
-
     render(h) {
       let {
         type,
@@ -171,7 +116,7 @@
         </div>
       );
     },
-  
+
     created() {
       if (!this.currentName) {
         this.setCurrentName('0');
@@ -186,6 +131,61 @@
 
     updated() {
       this.calcPaneInstances();
+    },
+
+    methods: {
+      calcPaneInstances(isForceUpdate = false) {
+        if (this.$slots.default) {
+          const paneSlots = this.$slots.default.filter(vnode => vnode.tag &&
+            vnode.componentOptions && vnode.componentOptions.Ctor.options.name === 'ElTabPane');
+          // update indeed
+          const panes = paneSlots.map(({ componentInstance }) => componentInstance);
+          const panesChanged = !(panes.length === this.panes.length && panes.every((pane, index) => pane === this.panes[index]));
+          if (isForceUpdate || panesChanged) {
+            this.panes = panes;
+          }
+        } else if (this.panes.length !== 0) {
+          this.panes = [];
+        }
+      },
+      handleTabClick(tab, tabName, event) {
+        if (tab.disabled) return;
+        this.setCurrentName(tabName);
+        this.$emit('tab-click', tab, event);
+      },
+      handleTabRemove(pane, ev) {
+        if (pane.disabled) return;
+        ev.stopPropagation();
+        this.$emit('edit', pane.name, 'remove');
+        this.$emit('tab-remove', pane.name);
+      },
+      handleTabAdd() {
+        this.$emit('edit', null, 'add');
+        this.$emit('tab-add');
+      },
+      setCurrentName(value) {
+        const changeCurrentName = () => {
+          this.currentName = value;
+          this.$emit('input', value);
+        };
+        if (this.currentName !== value && this.beforeLeave) {
+          const before = this.beforeLeave(value, this.currentName);
+          if (before && before.then) {
+            before
+              .then(() => {
+                changeCurrentName();
+                this.$refs.nav && this.$refs.nav.removeFocus();
+              }, () => {
+                // https://github.com/ElemeFE/element/pull/14816
+                // ignore promise rejection in `before-leave` hook
+              });
+          } else if (before !== false) {
+            changeCurrentName();
+          }
+        } else {
+          changeCurrentName();
+        }
+      }
     }
   };
 </script>

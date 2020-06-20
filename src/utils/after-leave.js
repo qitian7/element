@@ -1,5 +1,6 @@
 /**
  * Bind after-leave event for vue instance. Make sure after-leave is called in any browsers.
+ * (此函数目的是 兼容, 确保在所有浏览器中都调用了after-leave。) 为vue实例绑定离开后事件。
  *
  * @param {Vue} instance Vue instance.
  * @param {Function} callback callback of after-leave event
@@ -13,7 +14,7 @@ export default function(instance, callback, speed = 300, once = false) {
     if (called) return;
     called = true;
     if (callback) {
-      callback.apply(null, arguments);
+      callback.apply(null, arguments); // 执行cn
     }
   };
   if (once) {

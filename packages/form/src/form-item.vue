@@ -1,18 +1,20 @@
 <template>
-  <div class="el-form-item" :class="[{
-      'el-form-item--feedback': elForm && elForm.statusIcon,
-      'is-error': validateState === 'error',
-      'is-validating': validateState === 'validating',
-      'is-success': validateState === 'success',
-      'is-required': isRequired || required,
-      'is-no-asterisk': elForm && elForm.hideRequiredAsterisk
-    },
-    sizeClass ? 'el-form-item--' + sizeClass : ''
+  <div class="el-form-item"
+       :class="[{
+        'el-form-item--feedback': elForm && elForm.statusIcon,
+        'is-error': validateState === 'error',
+        'is-validating': validateState === 'validating',
+        'is-success': validateState === 'success',
+        'is-required': isRequired || required,
+        'is-no-asterisk': elForm && elForm.hideRequiredAsterisk
+       },
+       sizeClass ? 'el-form-item--' + sizeClass : ''
   ]">
     <label-wrap
       :is-auto-width="labelStyle && labelStyle.width === 'auto'"
       :update-all="form.labelWidth === 'auto'">
       <label :for="labelFor" class="el-form-item__label" :style="labelStyle" v-if="label || $slots.label">
+        <!-- 具名插槽 <template v-slot:label><strong>123</strong></template> -->
         <slot name="label">{{label + form.labelSuffix}}</slot>
       </label>
     </label-wrap>
@@ -39,7 +41,7 @@
   </div>
 </template>
 <script>
-  import AsyncValidator from 'async-validator';
+  import AsyncValidator from 'async-validator'; // 一个表单的异步验证的第三方库
   import emitter from 'element-ui/src/mixins/emitter';
   import objectAssign from 'element-ui/src/utils/merge';
   import { noop, getPropByPath } from 'element-ui/src/utils/util';
@@ -127,7 +129,7 @@
         }
         return ret;
       },
-      form() {
+      form() { // 拿到父元素的dom
         let parent = this.$parent;
         let parentName = parent.$options.componentName;
         while (parentName !== 'ElForm') {
@@ -139,15 +141,18 @@
         }
         return parent;
       },
+      // 类似:  拿到当前这个 prop=name 里,  这个name对应的值(:model的对象里的name) 父父级
       fieldValue() {
+        // this.form.model意思: <el-form :model='xx' 拿到v-model绑定的xx的值
+        // 这是一个名字的歧义, 就是简单的:model的值
         const model = this.form.model;
         if (!model || !this.prop) { return; }
 
+        // 如果传了 prop
         let path = this.prop;
         if (path.indexOf(':') !== -1) {
           path = path.replace(/:/, '.');
         }
-
         return getPropByPath(model, path, true).v;
       },
       isRequired() {
@@ -185,10 +190,32 @@
         computedLabelWidth: ''
       };
     },
+    mounted() {
+      if (this.prop) {
+        // 给父 el-form 送this过去
+        this.dispatch('ElForm', 'el.form.addField', [this]);
+
+        // 把prop对应的数据绑到这里的this
+        let initialValue = this.fieldValue;
+        if (Array.isArray(initialValue)) {
+          initialValue = [].concat(initialValue);
+        }
+        Object.defineProperty(this, 'initialValue', {
+          value: initialValue
+        });
+
+        // 注册 校验事件 (blur, change)
+        this.addValidateEvents();
+      }
+    },
+    beforeDestroy() {
+      this.dispatch('ElForm', 'el.form.removeField', [this]);
+    },
     methods: {
+      // 任一表单项被校验后触发
       validate(trigger, callback = noop) {
         this.validateDisabled = false;
-        const rules = this.getFilteredRule(trigger);
+        const rules = this.getFilteredRule(trigger); // 返回rule数组, 过滤掉没填trigger的
         if ((!rules || rules.length === 0) && this.required === undefined) {
           callback();
           return true;
@@ -202,13 +229,17 @@
             delete rule.trigger;
           });
         }
+        // 得到的数组 rules  去掉trigger后, 整成descriptor对象的值, 键是prop
         descriptor[this.prop] = rules;
 
+        // 一个表单的异步验证的第三方库
+        // 根据校验descriptor 规则构造一个 validator
         const validator = new AsyncValidator(descriptor);
         const model = {};
 
         model[this.prop] = this.fieldValue;
 
+        // validator.validate 这是第三方库提供的校验方法,  有error会回调出来
         validator.validate(model, { firstFields: true }, (errors, invalidFields) => {
           this.validateState = !errors ? 'success' : 'error';
           this.validateMessage = errors ? errors[0].message : '';
@@ -217,11 +248,13 @@
           this.elForm && this.elForm.$emit('validate', this.prop, !errors, this.validateMessage || null);
         });
       },
+      // 移除表单项的"校验"结果。
       clearValidate() {
         this.validateState = '';
         this.validateMessage = '';
         this.validateDisabled = false;
       },
+      // 对整个表单进行重置
       resetField() {
         this.validateState = '';
         this.validateMessage = '';
@@ -259,6 +292,7 @@
 
         return [].concat(selfRules || formRules || []).concat(requiredRule);
       },
+      // 返回rule数组, 过滤掉没填trigger的
       getFilteredRule(trigger) {
         const rules = this.getRules();
 
@@ -296,24 +330,7 @@
       removeValidateEvents() {
         this.$off();
       }
-    },
-    mounted() {
-      if (this.prop) {
-        this.dispatch('ElForm', 'el.form.addField', [this]);
-
-        let initialValue = this.fieldValue;
-        if (Array.isArray(initialValue)) {
-          initialValue = [].concat(initialValue);
-        }
-        Object.defineProperty(this, 'initialValue', {
-          value: initialValue
-        });
-
-        this.addValidateEvents();
-      }
-    },
-    beforeDestroy() {
-      this.dispatch('ElForm', 'el.form.removeField', [this]);
     }
+
   };
 </script>

@@ -65,6 +65,7 @@ export default {
   beforeCreate() {
     if (this.$isServer) return;
 
+    // 提前把popper的vnode 挂载到dom
     this.popperVM = new Vue({
       data: { node: '' },
       render(h) {
@@ -75,38 +76,8 @@ export default {
     this.debounceClose = debounce(200, () => this.handleClosePopper());
   },
 
-  render(h) {
-    if (this.popperVM) {
-      this.popperVM.node = (
-        <transition
-          name={ this.transition }
-          onAfterLeave={ this.doDestroy }>
-          <div
-            onMouseleave={ () => { this.setExpectedState(false); this.debounceClose(); } }
-            onMouseenter= { () => { this.setExpectedState(true); } }
-            ref="popper"
-            role="tooltip"
-            id={this.tooltipId}
-            aria-hidden={ (this.disabled || !this.showPopper) ? 'true' : 'false' }
-            v-show={!this.disabled && this.showPopper}
-            class={
-              ['el-tooltip__popper', 'is-' + this.effect, this.popperClass]
-            }>
-            { this.$slots.content || this.content }
-          </div>
-        </transition>);
-    }
-
-    const firstElement = this.getFirstElement();
-    if (!firstElement) return null;
-
-    const data = firstElement.data = firstElement.data || {};
-    data.staticClass = this.addTooltipClass(data.staticClass);
-
-    return firstElement;
-  },
-
   mounted() {
+    // 从这里控制popper的显示, mouseenter    this.show加进去 (vue-popper.js内 有个watch)
     this.referenceElm = this.$el;
     if (this.$el.nodeType === 1) {
       this.$el.setAttribute('aria-describedby', this.tooltipId);
@@ -137,6 +108,44 @@ export default {
       });
     }
   },
+
+  render(h) {
+    // <el-tooltip 的真身   (动态加上去的)
+    // 用 this.$refs.popper 被 New PopperJS(reference, popper, options); 初始化加到页面上的
+    if (this.popperVM) {
+      this.popperVM.node = (
+        <transition
+          name={ this.transition }
+          onAfterLeave={ this.doDestroy }>
+          <div
+            onMouseleave={ () => { this.setExpectedState(false); this.debounceClose(); } }
+            onMouseenter= { () => { this.setExpectedState(true); } }
+            ref="popper"
+            role="tooltip"
+            id={this.tooltipId}
+            aria-hidden={ (this.disabled || !this.showPopper) ? 'true' : 'false' }
+            v-show={!this.disabled && this.showPopper}
+            class={
+              ['el-tooltip__popper', 'is-' + this.effect, this.popperClass]
+            }>
+            { this.$slots.content || this.content }
+          </div>
+        </transition>
+      );
+    }
+
+    //    <el-tooltip className="item" effect="dark" content="Top Left 提示文字" placement="top-start">
+    //       <el-button>上左</el-button>
+    //     </el-tooltip>
+    // 展示 被 <el-tooltip 包住的元素
+    const firstElement = this.getFirstElement();
+    if (!firstElement) return null;
+
+    const data = firstElement.data = firstElement.data || {};
+    data.staticClass = this.addTooltipClass(data.staticClass);
+
+    return firstElement;
+  },
   watch: {
     focusing(val) {
       if (val) {
@@ -146,6 +155,21 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    this.popperVM && this.popperVM.$destroy();
+  },
+
+  destroyed() {
+    const reference = this.referenceElm;
+    if (reference.nodeType === 1) {
+      off(reference, 'mouseenter', this.show);
+      off(reference, 'mouseleave', this.hide);
+      off(reference, 'focus', this.handleFocus);
+      off(reference, 'blur', this.handleBlur);
+      off(reference, 'click', this.removeFocusing);
+    }
+  },
+
   methods: {
     show() {
       this.setExpectedState(true);
@@ -221,21 +245,6 @@ export default {
         };
       }
       return element;
-    }
-  },
-
-  beforeDestroy() {
-    this.popperVM && this.popperVM.$destroy();
-  },
-
-  destroyed() {
-    const reference = this.referenceElm;
-    if (reference.nodeType === 1) {
-      off(reference, 'mouseenter', this.show);
-      off(reference, 'mouseleave', this.hide);
-      off(reference, 'focus', this.handleFocus);
-      off(reference, 'blur', this.handleBlur);
-      off(reference, 'click', this.removeFocusing);
     }
   }
 };

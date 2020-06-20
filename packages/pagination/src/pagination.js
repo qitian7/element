@@ -5,6 +5,9 @@ import ElInput from 'element-ui/packages/input';
 import Locale from 'element-ui/src/mixins/locale';
 import { valueEquals } from 'element-ui/src/utils/util';
 
+/** vue写 jsx的典范
+ */
+
 export default {
   name: 'ElPagination',
 
@@ -278,6 +281,53 @@ export default {
     Pager
   },
 
+  computed: {
+    internalPageCount() {
+      if (typeof this.total === 'number') {
+        return Math.max(1, Math.ceil(this.total / this.internalPageSize));
+      } else if (typeof this.pageCount === 'number') {
+        return Math.max(1, this.pageCount);
+      }
+      return null;
+    }
+  },
+
+  watch: {
+    currentPage: {
+      immediate: true,
+      handler(val) {
+        this.internalCurrentPage = this.getValidCurrentPage(val);
+      }
+    },
+
+    pageSize: {
+      immediate: true,
+      handler(val) {
+        this.internalPageSize = isNaN(val) ? 10 : val;
+      }
+    },
+
+    internalCurrentPage: {
+      immediate: true,
+      handler(newVal) {
+        this.$emit('update:currentPage', newVal);
+        this.lastEmittedPage = -1;
+      }
+    },
+
+    internalPageCount(newVal) {
+      /* istanbul ignore if */
+      const oldPage = this.internalCurrentPage;
+      if (newVal > 0 && oldPage === 0) {
+        this.internalCurrentPage = 1;
+      } else if (oldPage > newVal) {
+        this.internalCurrentPage = newVal === 0 ? 1 : newVal;
+        this.userChangePageSize && this.emitChange();
+      }
+      this.userChangePageSize = false;
+    }
+  },
+
   methods: {
     handleCurrentChange(val) {
       this.internalCurrentPage = this.getValidCurrentPage(val);
@@ -334,53 +384,6 @@ export default {
           this.userChangePageSize = false;
         }
       });
-    }
-  },
-
-  computed: {
-    internalPageCount() {
-      if (typeof this.total === 'number') {
-        return Math.max(1, Math.ceil(this.total / this.internalPageSize));
-      } else if (typeof this.pageCount === 'number') {
-        return Math.max(1, this.pageCount);
-      }
-      return null;
-    }
-  },
-
-  watch: {
-    currentPage: {
-      immediate: true,
-      handler(val) {
-        this.internalCurrentPage = this.getValidCurrentPage(val);
-      }
-    },
-
-    pageSize: {
-      immediate: true,
-      handler(val) {
-        this.internalPageSize = isNaN(val) ? 10 : val;
-      }
-    },
-
-    internalCurrentPage: {
-      immediate: true,
-      handler(newVal) {
-        this.$emit('update:currentPage', newVal);
-        this.lastEmittedPage = -1;
-      }
-    },
-
-    internalPageCount(newVal) {
-      /* istanbul ignore if */
-      const oldPage = this.internalCurrentPage;
-      if (newVal > 0 && oldPage === 0) {
-        this.internalCurrentPage = 1;
-      } else if (oldPage > newVal) {
-        this.internalCurrentPage = newVal === 0 ? 1 : newVal;
-        this.userChangePageSize && this.emitChange();
-      }
-      this.userChangePageSize = false;
     }
   }
 };

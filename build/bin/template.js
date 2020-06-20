@@ -11,6 +11,9 @@ watcher.on('ready', function() {
     });
 });
 
+/** 监听i18n模板: 如果模板发生变化, 则重新, 编译npm run i18n 生成对应的多语言版本
+ */
+
 function exec(cmd) {
   return require('child_process').execSync(cmd).toString().trim();
 }

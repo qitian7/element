@@ -1,6 +1,7 @@
 @import "./common/var.scss";
 @import "./mixins/mixins.scss";
 
+// * 是通配符,  [class*="el-col-"] 表示, 任一class只要含el-col-的,就 ...
 [class*="el-col-"] {
   float: left;
   box-sizing: border-box;

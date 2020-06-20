@@ -5,25 +5,26 @@ import { PopupManager } from 'element-ui/src/utils/popup';
 import afterLeave from 'element-ui/src/utils/after-leave';
 import merge from 'element-ui/src/utils/merge';
 
-const LoadingConstructor = Vue.extend(loadingVue);
 
-const defaults = {
-  text: null,
-  fullscreen: true,
-  body: false,
-  lock: false,
-  customClass: ''
-};
+/**
+ * 1. 给Vue.extend(loadingVue) 遮罩层, 增加一些变量和方法(close)
+ * 2. 给父和loading层都加上样式
+ * 3. 返回 遮罩层 的vue实例!
+ */
+
+const LoadingConstructor = Vue.extend(loadingVue);
 
 let fullscreenLoading;
 
 LoadingConstructor.prototype.originalPosition = '';
 LoadingConstructor.prototype.originalOverflow = '';
 
+// 控制关掉loading: 1.removeClass  2.稍微延迟关闭
 LoadingConstructor.prototype.close = function() {
   if (this.fullscreen) {
     fullscreenLoading = undefined;
   }
+  // (此函数目的是 兼容, 确保在所有浏览器中都调用了after-leave。) 为vue实例绑定离开后事件。
   afterLeave(this, _ => {
     const target = this.fullscreen || this.body
       ? document.body
@@ -38,6 +39,7 @@ LoadingConstructor.prototype.close = function() {
   this.visible = false;
 };
 
+// 给实例 instance 加上 样式(初始化样式 / 根据 对应的元素),
 const addStyle = (options, parent, instance) => {
   let maskStyle = {};
   if (options.fullscreen) {
@@ -64,6 +66,22 @@ const addStyle = (options, parent, instance) => {
   });
 };
 
+//         const loading = this.$loading({
+//           lock: true,
+//           text: 'Loading',
+//           spinner: 'el-icon-loading',
+//           background: 'rgba(0, 0, 0, 0.7)'
+//         });
+//         setTimeout(() => {
+//           loading.close();
+//         }, 2000);
+const defaults = {
+  text: null,
+  fullscreen: true,
+  body: false,
+  lock: false,
+  customClass: ''
+};
 const Loading = (options = {}) => {
   if (Vue.prototype.$isServer) return;
   options = merge({}, defaults, options);
@@ -81,11 +99,13 @@ const Loading = (options = {}) => {
   }
 
   let parent = options.body ? document.body : options.target;
+
   let instance = new LoadingConstructor({
     el: document.createElement('div'),
     data: options
   });
 
+  // 给父和loading层都加上样式
   addStyle(options, parent, instance);
   if (instance.originalPosition !== 'absolute' && instance.originalPosition !== 'fixed') {
     addClass(parent, 'el-loading-parent--relative');
@@ -93,13 +113,17 @@ const Loading = (options = {}) => {
   if (options.fullscreen && options.lock) {
     addClass(parent, 'el-loading-parent--hidden');
   }
+  // 给父和loading层都加上样式
   parent.appendChild(instance.$el);
+
   Vue.nextTick(() => {
     instance.visible = true;
   });
   if (options.fullscreen) {
     fullscreenLoading = instance;
   }
+
+  // 返回 遮罩层 的vue实例!
   return instance;
 };
 

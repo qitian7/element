@@ -1,5 +1,6 @@
 <template>
   <transition name="el-message-fade" @after-leave="handleAfterLeave">
+    <!-- @after-leave 是 <transition 的一个钩子 -->
     <div
       :class="[
         'el-message',
@@ -72,6 +73,13 @@
       }
     },
 
+    mounted() {
+      this.startTimer(); // 默认300秒关闭
+      document.addEventListener('keydown', this.keydown);
+    },
+    beforeDestroy() {
+      document.removeEventListener('keydown', this.keydown);
+    },
     methods: {
       handleAfterLeave() {
         this.$destroy(true);
@@ -105,13 +113,6 @@
           }
         }
       }
-    },
-    mounted() {
-      this.startTimer();
-      document.addEventListener('keydown', this.keydown);
-    },
-    beforeDestroy() {
-      document.removeEventListener('keydown', this.keydown);
     }
   };
 </script>

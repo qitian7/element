@@ -1,3 +1,10 @@
+
+/** UMD  Universal Module Definition
+ *    通用模块定义 ( 兼容AMD和CommonJS，还支持老式『全局』变量定义 )
+ *      一种兼容方式, 用babel打包就行, 没有人会直接写UMD(很丑)
+ *
+ */
+
 var fs = require('fs');
 var save = require('file-save');
 var resolve = require('path').resolve;

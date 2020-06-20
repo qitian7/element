@@ -20,7 +20,11 @@ import { kebabCase } from 'element-ui/src/utils/util';
  *    };
  *  },
  */
+
+// 这个function目的:  版本迁移后, 如果使用到过去的api, 如this.getMigratingConfig()内的某个api, 则报一个warn的警告
+// 告诉别人, 现在已经版本迁移了
 export default {
+  // 从this.getMigratingConfig()这里面拿到的  props 和 events 如果和原本的有冲突, 则报警告
   mounted() {
     if (process.env.NODE_ENV === 'production') return;
     if (!this.$vnode) return;

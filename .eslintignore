@@ -9,3 +9,8 @@ coverage
 *.scss
 *.woff
 *.ttf
+
+
+*.js
+*.vue
+*.*

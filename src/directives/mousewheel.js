@@ -1,4 +1,4 @@
-import normalizeWheel from 'normalize-wheel';
+import normalizeWheel from 'normalize-wheel'; // 跨浏览器 滚轮兼容
 
 const isFirefox = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
@@ -11,6 +11,7 @@ const mousewheel = function(element, callback) {
   }
 };
 
+// 跨浏览器 滚轮兼容
 export default {
   bind(el, binding) {
     mousewheel(el, binding.value);

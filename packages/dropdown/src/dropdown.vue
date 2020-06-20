@@ -69,7 +69,7 @@
         triggerElm: null,
         menuItems: null,
         menuItemsArray: null,
-        dropdownElm: null,
+        dropdownElm: null, // popperElm
         focusing: false,
         listId: `dropdown-menu-${generateId()}`
       };
@@ -102,7 +102,93 @@
       }
     },
 
+    render(h) {
+      let { hide, splitButton, type, dropdownSize } = this;
+
+      const handleMainButtonClick = (event) => {
+        this.$emit('click', event);
+        hide();
+      };
+
+      // 下拉触发元素呈现为按钮组
+      let triggerElm = !splitButton
+        ? this.$slots.default
+        : (<el-button-group>
+          <el-button type={type} size={dropdownSize} nativeOn-click={handleMainButtonClick}>
+            {this.$slots.default}
+          </el-button>
+          <el-button ref="trigger" type={type} size={dropdownSize} class="el-dropdown__caret-button">
+            <i class="el-dropdown__icon el-icon-arrow-down"></i>
+          </el-button>
+        </el-button-group>);
+
+      return (
+        <div class="el-dropdown" v-clickoutside={hide}>
+          {triggerElm}
+          {this.$slots.dropdown}
+        </div>
+      );
+    },
+
     methods: {
+      // 初始化 ( 在menu内激活 )
+      initDomOperation() {
+        this.dropdownElm = this.popperElm;
+
+        // tabindex : 带有指定 tab 键顺序的链接：
+        //    <a href="http://www.w3school.com.cn/" tabindex="2">W3School</a>
+        //    <a href="http://www.google.com/" tabindex="1">Google</a>
+        //    <a href="http://www.microsoft.com/" tabindex="3">Microsoft</a>
+        this.menuItems = this.dropdownElm.querySelectorAll("[tabindex='-1']");
+        this.menuItemsArray = [].slice.call(this.menuItems);
+
+        this.initEvent();
+        this.initAria();
+      },
+      initAria() {
+        this.dropdownElm.setAttribute('id', this.listId);
+        this.triggerElm.setAttribute('aria-haspopup', 'list');
+        this.triggerElm.setAttribute('aria-controls', this.listId);
+
+        if (!this.splitButton) { // 自定义
+          this.triggerElm.setAttribute('role', 'button');
+          this.triggerElm.setAttribute('tabindex', this.tabindex);
+          this.triggerElm.setAttribute('class', (this.triggerElm.getAttribute('class') || '') + ' el-dropdown-selfdefine'); // 控制
+        }
+      },
+      // 初始化一些事件监听: hover click等
+      initEvent() {
+        let { trigger, show, hide, handleClick, splitButton, handleTriggerKeyDown, handleItemKeyDown } = this;
+        // 拿到触发event的对象
+        this.triggerElm = splitButton
+          ? this.$refs.trigger.$el
+          : this.$slots.default[0].elm;
+
+        let dropdownElm = this.dropdownElm;
+
+        this.triggerElm.addEventListener('keydown', handleTriggerKeyDown); // triggerElm keydown
+        dropdownElm.addEventListener('keydown', handleItemKeyDown, true); // item keydown
+        // 控制自定义元素的样式
+        if (!splitButton) {
+          this.triggerElm.addEventListener('focus', () => {
+            this.focusing = true;
+          });
+          this.triggerElm.addEventListener('blur', () => {
+            this.focusing = false;
+          });
+          this.triggerElm.addEventListener('click', () => {
+            this.focusing = false;
+          });
+        }
+        if (trigger === 'hover') {
+          this.triggerElm.addEventListener('mouseenter', show);
+          this.triggerElm.addEventListener('mouseleave', hide);
+          dropdownElm.addEventListener('mouseenter', show);
+          dropdownElm.addEventListener('mouseleave', hide);
+        } else if (trigger === 'click') {
+          this.triggerElm.addEventListener('click', handleClick);
+        }
+      },
       getMigratingConfig() {
         return {
           props: {
@@ -117,6 +203,7 @@
           this.visible = true;
         }, this.trigger === 'click' ? 0 : this.showTimeout);
       },
+      // 绑定在 v-clickoutside上的方法, 关闭弹窗
       hide() {
         if (this.triggerElm.disabled) return;
         this.removeTabindex();
@@ -188,48 +275,6 @@
           item.setAttribute('tabindex', '-1');
         });
       },
-      initAria() {
-        this.dropdownElm.setAttribute('id', this.listId);
-        this.triggerElm.setAttribute('aria-haspopup', 'list');
-        this.triggerElm.setAttribute('aria-controls', this.listId);
-
-        if (!this.splitButton) { // 自定义
-          this.triggerElm.setAttribute('role', 'button');
-          this.triggerElm.setAttribute('tabindex', this.tabindex);
-          this.triggerElm.setAttribute('class', (this.triggerElm.getAttribute('class') || '') + ' el-dropdown-selfdefine'); // 控制
-        }
-      },
-      initEvent() {
-        let { trigger, show, hide, handleClick, splitButton, handleTriggerKeyDown, handleItemKeyDown } = this;
-        this.triggerElm = splitButton
-          ? this.$refs.trigger.$el
-          : this.$slots.default[0].elm;
-
-        let dropdownElm = this.dropdownElm;
-
-        this.triggerElm.addEventListener('keydown', handleTriggerKeyDown); // triggerElm keydown
-        dropdownElm.addEventListener('keydown', handleItemKeyDown, true); // item keydown
-        // 控制自定义元素的样式
-        if (!splitButton) {
-          this.triggerElm.addEventListener('focus', () => {
-            this.focusing = true;
-          });
-          this.triggerElm.addEventListener('blur', () => {
-            this.focusing = false;
-          });
-          this.triggerElm.addEventListener('click', () => {
-            this.focusing = false;
-          });
-        }
-        if (trigger === 'hover') {
-          this.triggerElm.addEventListener('mouseenter', show);
-          this.triggerElm.addEventListener('mouseleave', hide);
-          dropdownElm.addEventListener('mouseenter', show);
-          dropdownElm.addEventListener('mouseleave', hide);
-        } else if (trigger === 'click') {
-          this.triggerElm.addEventListener('click', handleClick);
-        }
-      },
       handleMenuItemClick(command, instance) {
         if (this.hideOnClick) {
           this.visible = false;
@@ -238,42 +283,7 @@
       },
       triggerElmFocus() {
         this.triggerElm.focus && this.triggerElm.focus();
-      },
-      initDomOperation() {
-        this.dropdownElm = this.popperElm;
-        this.menuItems = this.dropdownElm.querySelectorAll("[tabindex='-1']");
-        this.menuItemsArray = [].slice.call(this.menuItems);
-
-        this.initEvent();
-        this.initAria();
       }
-    },
-
-    render(h) {
-      let { hide, splitButton, type, dropdownSize } = this;
-
-      const handleMainButtonClick = (event) => {
-        this.$emit('click', event);
-        hide();
-      };
-
-      let triggerElm = !splitButton
-        ? this.$slots.default
-        : (<el-button-group>
-          <el-button type={type} size={dropdownSize} nativeOn-click={handleMainButtonClick}>
-            {this.$slots.default}
-          </el-button>
-          <el-button ref="trigger" type={type} size={dropdownSize} class="el-dropdown__caret-button">
-            <i class="el-dropdown__icon el-icon-arrow-down"></i>
-          </el-button>
-        </el-button-group>);
-
-      return (
-        <div class="el-dropdown" v-clickoutside={hide}>
-          {triggerElm}
-          {this.$slots.dropdown}
-        </div>
-      );
     }
   };
 </script>

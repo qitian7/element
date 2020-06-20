@@ -83,10 +83,16 @@ export default {
     }
   },
 
+  // 初始化各种事件, 控制popper的显示
   mounted() {
+    // this.$refs.reference 配合 v-popover
+    // v-popover:popover
+    //    1. 用refs.popover 拿到对应的 对应的vdom
+    //    2. 用的vdom的$refs.reference保存 v-popover绑定的vnode(比如button)
     let reference = this.referenceElm = this.reference || this.$refs.reference;
     const popper = this.popper || this.$refs.popper;
 
+    // 没使用 v-popover的话, 就用 slot="reference"
     if (!reference && this.$slots.reference && this.$slots.reference[0]) {
       reference = this.referenceElm = this.$slots.reference[0].elm;
     }
@@ -140,6 +146,21 @@ export default {
 
   deactivated() {
     this.cleanup();
+  },
+
+  destroyed() {
+    const reference = this.reference;
+
+    off(reference, 'click', this.doToggle);
+    off(reference, 'mouseup', this.doClose);
+    off(reference, 'mousedown', this.doShow);
+    off(reference, 'focusin', this.doShow);
+    off(reference, 'focusout', this.doClose);
+    off(reference, 'mousedown', this.doShow);
+    off(reference, 'mouseup', this.doClose);
+    off(reference, 'mouseleave', this.handleMouseLeave);
+    off(reference, 'mouseenter', this.handleMouseEnter);
+    off(document, 'click', this.handleDocumentClick);
   },
 
   methods: {
@@ -215,21 +236,6 @@ export default {
         clearTimeout(this._timer);
       }
     }
-  },
-
-  destroyed() {
-    const reference = this.reference;
-
-    off(reference, 'click', this.doToggle);
-    off(reference, 'mouseup', this.doClose);
-    off(reference, 'mousedown', this.doShow);
-    off(reference, 'focusin', this.doShow);
-    off(reference, 'focusout', this.doClose);
-    off(reference, 'mousedown', this.doShow);
-    off(reference, 'mouseup', this.doClose);
-    off(reference, 'mouseleave', this.handleMouseLeave);
-    off(reference, 'mouseenter', this.handleMouseEnter);
-    off(document, 'click', this.handleDocumentClick);
   }
 };
 </script>

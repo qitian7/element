@@ -8,10 +8,11 @@ const Mask = Vue.extend(Loading);
 const loadingDirective = {};
 loadingDirective.install = Vue => {
   if (Vue.prototype.$isServer) return;
+  // 触发loading ( 操作dom )
   const toggleLoading = (el, binding) => {
-    if (binding.value) {
+    if (binding.value) { // 如果 v-loading 绑定的值为true
       Vue.nextTick(() => {
-        if (binding.modifiers.fullscreen) {
+        if (binding.modifiers.fullscreen) { // v-loading.fullscreen
           el.originalPosition = getStyle(document.body, 'position');
           el.originalOverflow = getStyle(document.body, 'overflow');
           el.maskStyle.zIndex = PopupManager.nextZIndex();
@@ -21,9 +22,10 @@ loadingDirective.install = Vue => {
         } else {
           removeClass(el.mask, 'is-fullscreen');
 
-          if (binding.modifiers.body) {
+          if (binding.modifiers.body) { // loading 插入到body
             el.originalPosition = getStyle(document.body, 'position');
 
+            // 获取body的位置信息
             ['top', 'left'].forEach(property => {
               const scroll = property === 'top' ? 'scrollTop' : 'scrollLeft';
               el.maskStyle[property] = el.getBoundingClientRect()[property] +
@@ -37,13 +39,13 @@ loadingDirective.install = Vue => {
             });
 
             insertDom(document.body, el, binding);
-          } else {
+          } else { // loading 插入到 自身
             el.originalPosition = getStyle(el, 'position');
             insertDom(el, el, binding);
           }
         }
       });
-    } else {
+    } else { // v-loading 绑定的值为 false   关闭loading (removeClass)
       afterLeave(el.instance, _ => {
         if (!el.instance.hiding) return;
         el.domVisible = false;
@@ -58,8 +60,11 @@ loadingDirective.install = Vue => {
       el.instance.hiding = true;
     }
   };
+  // 1. 给parent 加 class
+  // 2. 插入mark:  parent.appendChild(el.mask);
   const insertDom = (parent, el, binding) => {
     if (!el.domVisible && getStyle(el, 'display') !== 'none' && getStyle(el, 'visibility') !== 'hidden') {
+      // el.maskStyle  body的位置信息
       Object.keys(el.maskStyle).forEach(property => {
         el.mask.style[property] = el.maskStyle[property];
       });
@@ -94,6 +99,7 @@ loadingDirective.install = Vue => {
       const backgroundExr = el.getAttribute('element-loading-background');
       const customClassExr = el.getAttribute('element-loading-custom-class');
       const vm = vnode.context;
+
       const mask = new Mask({
         el: document.createElement('div'),
         data: {
@@ -104,6 +110,7 @@ loadingDirective.install = Vue => {
           fullscreen: !!binding.modifiers.fullscreen
         }
       });
+      // 给v-loading绑定的 当前域的vm 绑定mask节点
       el.instance = mask;
       el.mask = mask.$el;
       el.maskStyle = {};
@@ -111,6 +118,7 @@ loadingDirective.install = Vue => {
       binding.value && toggleLoading(el, binding);
     },
 
+    // 更新 element-loading-text 的值
     update: function(el, binding) {
       el.instance.setText(el.getAttribute('element-loading-text'));
       if (binding.oldValue !== binding.value) {
@@ -118,6 +126,7 @@ loadingDirective.install = Vue => {
       }
     },
 
+    // 与元素解绑时调用
     unbind: function(el, binding) {
       if (el.domInserted) {
         el.mask &&

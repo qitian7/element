@@ -13,6 +13,8 @@ const stop = e => e.stopPropagation();
  * @param {Number} [offset=0] - Amount of pixels the popper will be shifted (can be negative).
  * @param {Boolean} [visible=false] Visibility of the popup element.
  * @param {Boolean} [visible-arrow=false] Visibility of the arrow, no style.
+ *
+ *   这个组件兼容了几个地方: 比如: el-select   el-dropdown   el-tooltip
  */
 export default {
   props: {
@@ -69,11 +71,25 @@ export default {
       }
     },
 
+    // 控制popper打开
     showPopper(val) {
       if (this.disabled) return;
       val ? this.updatePopper() : this.destroyPopper();
       this.$emit('input', val);
     }
+  },
+
+  beforeDestroy() {
+    this.doDestroy(true);
+    if (this.popperElm && this.popperElm.parentNode === document.body) {
+      this.popperElm.removeEventListener('click', stop);
+      document.body.removeChild(this.popperElm);
+    }
+  },
+
+  // call destroy in keep-alive mode
+  deactivated() {
+    this.$options.beforeDestroy[0].call(this);
   },
 
   methods: {
@@ -85,6 +101,8 @@ export default {
       }
 
       const options = this.popperOptions;
+
+      // el-tooltip 是用 this.$refs.popper, 给加进去的
       const popper = this.popperElm = this.popperElm || this.popper || this.$refs.popper;
       let reference = this.referenceElm = this.referenceElm || this.reference || this.$refs.reference;
 
@@ -96,6 +114,7 @@ export default {
 
       if (!popper || !reference) return;
       if (this.visibleArrow) this.appendArrow(popper);
+      // 默认append是 触发元素 的nextSilbing ?
       if (this.appendToBody) document.body.appendChild(this.popperElm);
       if (this.popperJS && this.popperJS.destroy) {
         this.popperJS.destroy();
@@ -104,6 +123,20 @@ export default {
       options.placement = this.currentPlacement;
       options.offset = this.offset;
       options.arrowOffset = this.arrowOffset;
+
+      // 以上代码主要是拼参数
+      /** popper.js 用法:
+             var box = document.querySelector('.box'),
+             popper = document.querySelector('.popper'),
+
+             // 第一个参数: reference(鼠标指向的元素)
+             // 第二个参数: popper
+             // 第三个参数: options 选项
+             pIntance = new Popper(box, popper, {
+                placement: 'top',
+                positionFixed: true
+             });
+       */
       this.popperJS = new PopperJS(reference, popper, options);
       this.popperJS.onCreate(_ => {
         this.$emit('created', this);
@@ -181,18 +214,5 @@ export default {
       arrow.className = 'popper__arrow';
       element.appendChild(arrow);
     }
-  },
-
-  beforeDestroy() {
-    this.doDestroy(true);
-    if (this.popperElm && this.popperElm.parentNode === document.body) {
-      this.popperElm.removeEventListener('click', stop);
-      document.body.removeChild(this.popperElm);
-    }
-  },
-
-  // call destroy in keep-alive mode
-  deactivated() {
-    this.$options.beforeDestroy[0].call(this);
   }
 };

@@ -44,6 +44,17 @@ export const getValueByPath = function(object, prop) {
   return result;
 };
 
+/**
+ *  obj: 一般是如 el-form :model 绑定的值
+ *  path: 类似某个key
+ *
+ *  返回一个对象
+ *  return {
+ *    o: 总对象
+ *    k: path(键)
+ *    v: 值
+ *  }
+ */
 export function getPropByPath(obj, path, strict) {
   let tempObj = obj;
   path = path.replace(/\[(\w+)\]/g, '.$1');

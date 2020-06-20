@@ -1,3 +1,15 @@
+## 学习点
+1. 熟悉一些事件用法,  如: @mouseenter  @mouseleave
+2. <input 标签 有很多属性和事件  @compositionstart  @compositionupdate  @compositionend (连续输入)
+3. @input  @focus  @blur  @change
+4. emitter里面的 dispatch(向上传递, 直到找到指定父元素, 触发这个事件) 和 broadcast(向下传递, 同上)
+5. this.$on  :    created() {
+         this.$on('inputSelect', this.select);
+       },
+    1. this.$on  类似 v-on='xx'
+1. this.$el 拿到当前的dom
+
+
 ## Input 输入框
 
 通过鼠标或键盘输入字符
@@ -769,7 +781,6 @@ export default {
 | 事件名称 | 说明 | 回调参数 |
 |---------|--------|---------|
 | select | 点击选中建议项时触发 | 选中建议项 |
-| change | 在 Input 值改变时触发 | (value: string \| number) |
 
 ### Autocomplete Methods
 | 方法名 | 说明 | 参数 |

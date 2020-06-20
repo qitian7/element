@@ -38,7 +38,11 @@
 </template>
 
 <script>
-  import Popup from 'element-ui/src/utils/popup';
+
+  /** 这个el-dialog 会正常渲染, 只是用display: none 给隐藏了 (v-show的效果)
+   */
+
+  import Popup from 'element-ui/src/utils/popup'; // 创建model(遮罩)层, 及model层事件 PopupManager.openModal()
   import Migrating from 'element-ui/src/mixins/migrating';
   import emitter from 'element-ui/src/mixins/emitter';
 
@@ -118,6 +122,7 @@
     },
 
     watch: {
+      // 这个el-dialog 会正常渲染, 只是用display: none 给隐藏了 (v-show的效果)
       visible(val) {
         if (val) {
           this.closed = false;

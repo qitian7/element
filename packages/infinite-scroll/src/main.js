@@ -86,6 +86,7 @@ const getScrollOptions = (el, vm) => {
 
 const getElementTop = el => el.getBoundingClientRect().top;
 
+// 如果触底了, 才执行cb()(v-infinite-scroll绑定的函数)
 const handleScroll = function(cb) {
   const { el, vm, container, observer } = this[scope];
   const { distance, disabled } = getScrollOptions(el, vm);
@@ -117,6 +118,12 @@ const handleScroll = function(cb) {
 
 };
 
+
+/** 指令思路
+ *    1. 判断是否有滚动条, 在监听滚动事件
+ *    2. 滚动条滚到底, 则执行 v-infinite-scroll= 对应的事件 (其他的更新都是利用vue自己的响应式系统)
+ */
+
 export default {
   name: 'InfiniteScroll',
   inserted(el, binding, vnode) {
@@ -124,15 +131,19 @@ export default {
 
     const vm = vnode.context;
     // only include vertical scroll
+    // (一直往父级找, 直到)找到有滚动条的一层     overflow-y 或 overflow   auto
     const container = getScrollContainer(el, true);
+    // 拿到props传进来的参数
     const { delay, immediate } = getScrollOptions(el, vm);
+    // 如果触底了, 才执行cb()(v-infinite-scroll绑定的函数)
     const onScroll = throttle(delay, handleScroll.bind(el, cb));
 
     el[scope] = { el, vm, container, onScroll };
 
-    if (container) {
+    if (container) { // 必须存在滚动条
       container.addEventListener('scroll', onScroll);
 
+      // 默认立即执行加载方法，以防初始状态下内容无法撑满容器。
       if (immediate) {
         const observer = el[scope].observer = new MutationObserver(onScroll);
         observer.observe(container, { childList: true, subtree: true });

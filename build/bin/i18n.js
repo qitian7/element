@@ -1,5 +1,7 @@
 'use strict';
 
+// 根据配置文件和模板, 生成对应的.vue文件(多个语言的版本)
+
 var fs = require('fs');
 var path = require('path');
 var langConfig = require('../../examples/i18n/page.json');

@@ -1,4 +1,5 @@
 <template>
+  <!-- aria-xx 类的标签的意思: 1.aria是朗读的意思, 为了兼容一些电子产品; 2. 比如 为了一些盲人使用的听书产品可以识别的;   -->
   <div
     class="el-switch"
     :class="{ 'is-disabled': switchDisabled, 'is-checked': checked }"
@@ -25,8 +26,7 @@
       <i :class="[inactiveIconClass]" v-if="inactiveIconClass"></i>
       <span v-if="!inactiveIconClass && inactiveText" :aria-hidden="checked">{{ inactiveText }}</span>
     </span>
-    <span class="el-switch__core" ref="core" :style="{ 'width': coreWidth + 'px' }">
-    </span>
+    <span class="el-switch__core" ref="core" :style="{ 'width': coreWidth + 'px' }"></span>
     <span
       :class="['el-switch__label', 'el-switch__label--right', checked ? 'is-active' : '']"
       v-if="activeIconClass || activeText">
@@ -103,9 +103,18 @@
       };
     },
     created() {
+      // 初始化 v-model的值, 比如用户乱写了一个或没写, 则让v-model的值是 this.inactiveValue
       if (!~[this.activeValue, this.inactiveValue].indexOf(this.value)) {
         this.$emit('input', this.inactiveValue);
       }
+    },
+    mounted() {
+      /* istanbul ignore if */
+      this.coreWidth = this.width || 40;
+      if (this.activeColor || this.inactiveColor) {
+        this.setBackgroundColor();
+      }
+      this.$refs.input.checked = this.checked;
     },
     computed: {
       checked() {
@@ -159,14 +168,6 @@
           }
         };
       }
-    },
-    mounted() {
-      /* istanbul ignore if */
-      this.coreWidth = this.width || 40;
-      if (this.activeColor || this.inactiveColor) {
-        this.setBackgroundColor();
-      }
-      this.$refs.input.checked = this.checked;
     }
   };
 </script>

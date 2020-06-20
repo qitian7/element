@@ -39,6 +39,17 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.native) return;
+    this.$nextTick(this.update);
+    !this.noresize && addResizeListener(this.$refs.resize, this.update);
+  },
+
+  beforeDestroy() {
+    if (this.native) return;
+    !this.noresize && removeResizeListener(this.$refs.resize, this.update);
+  },
+
   render(h) {
     let gutter = scrollbarWidth();
     let style = this.wrapStyle;
@@ -73,6 +84,7 @@ export default {
     let nodes;
 
     if (!this.native) {
+      // 以下2个<Bar 标签 是x,y轴的滚动条, 自己添加的, 原来的用margin 隐藏起来
       nodes = ([
         wrap,
         <Bar
@@ -115,16 +127,5 @@ export default {
       this.sizeHeight = (heightPercentage < 100) ? (heightPercentage + '%') : '';
       this.sizeWidth = (widthPercentage < 100) ? (widthPercentage + '%') : '';
     }
-  },
-
-  mounted() {
-    if (this.native) return;
-    this.$nextTick(this.update);
-    !this.noresize && addResizeListener(this.$refs.resize, this.update);
-  },
-
-  beforeDestroy() {
-    if (this.native) return;
-    !this.noresize && removeResizeListener(this.$refs.resize, this.update);
   }
 };

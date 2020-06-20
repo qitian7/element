@@ -163,6 +163,14 @@ export default {
     }
   },
 
+  data() {
+    return {
+      draggingColumn: null,
+      dragging: false,
+      dragState: {}
+    };
+  },
+
   components: {
     ElCheckbox
   },
@@ -498,13 +506,5 @@ export default {
 
       this.store.commit('changeSortCondition');
     }
-  },
-
-  data() {
-    return {
-      draggingColumn: null,
-      dragging: false,
-      dragState: {}
-    };
   }
 };

@@ -10,10 +10,29 @@ Popconfirm 的属性与 Popover 很类似，因此对于重复属性，请参考
 <template>
 <el-popconfirm
   title="这是一段内容确定删除吗？"
+  @onConfirm="a"
+  @onCancel="a"
 >
   <el-button slot="reference">删除</el-button>
 </el-popconfirm>
 </template>
+<script>
+  export default {
+    data() {
+      return {
+  
+      }
+    },
+    mounted() {
+     
+    },
+    methods: {
+      a (){
+         alert(1)
+      }
+    }
+  }
+</script>
 ````
 :::
 
@@ -53,8 +72,8 @@ Popconfirm 的属性与 Popover 很类似，因此对于重复属性，请参考
 |--- | ---|
 | reference | 触发 Popconfirm 显示的 HTML 元素 |
 
-### Events
-| 事件名称 | 说明 | 回调参数 |
-|---------|--------|---------|
-| onConfirm | 点击确认按钮时触发 | — |
-| onCancel | 点击取消按钮时触发 | — |
+### Event
+ 参数 | 说明 |
+|--- | ---|
+| onConfirm | 触发 确定事件 |
+| onCancel | 触发 取消事件 |

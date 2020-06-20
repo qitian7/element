@@ -67,6 +67,7 @@ export default {
   },
 
   computed: {
+    // 拿到父级的el-table
     owner() {
       let parent = this.$parent;
       while (parent && !parent.tableId) {
@@ -98,6 +99,83 @@ export default {
     realHeaderAlign() {
       return this.headerAlign ? 'is-' + this.headerAlign : this.realAlign;
     }
+  },
+
+  components: {
+    ElCheckbox
+  },
+
+  beforeCreate() {
+    this.row = {};
+    this.column = {};
+    this.$index = 0;
+    this.columnId = '';
+  },
+
+  created() {
+    const parent = this.columnOrTableParent;
+    this.isSubColumn = this.owner !== parent;
+    this.columnId = (parent.tableId || parent.columnId) + '_column_' + columnIdSeed++;
+
+    const type = this.type || 'default';
+    const sortable = this.sortable === '' ? true : this.sortable;
+    const defaults = {
+      ...cellStarts[type],
+      id: this.columnId,
+      type: type,
+      property: this.prop || this.property,
+      align: this.realAlign,
+      headerAlign: this.realHeaderAlign,
+      showOverflowTooltip: this.showOverflowTooltip || this.showTooltipWhenOverflow,
+      // filter 相关属性
+      filterable: this.filters || this.filterMethod,
+      filteredValue: [],
+      filterPlacement: '',
+      isColumnGroup: false,
+      filterOpened: false,
+      // sort 相关属性
+      sortable: sortable,
+      // index 列
+      index: this.index
+    };
+
+    const basicProps = ['columnKey', 'label', 'className', 'labelClassName', 'type', 'renderHeader', 'formatter', 'fixed', 'resizable'];
+    const sortProps = ['sortMethod', 'sortBy', 'sortOrders'];
+    const selectProps = ['selectable', 'reserveSelection'];
+    const filterProps = ['filterMethod', 'filters', 'filterMultiple', 'filterOpened', 'filteredValue', 'filterPlacement'];
+
+    let column = this.getPropsData(basicProps, sortProps, selectProps, filterProps);
+    column = mergeOptions(defaults, column);
+
+    // 注意 compose 中函数执行的顺序是从右到左
+    const chains = compose(this.setColumnRenders, this.setColumnWidth, this.setColumnForcedProps);
+    column = chains(column);
+
+    this.columnConfig = column;
+
+    // 注册 watcher
+    this.registerNormalWatchers();
+    this.registerComplexWatchers();
+  },
+
+  mounted() {
+    const owner = this.owner;
+    const parent = this.columnOrTableParent;
+    const children = this.isSubColumn ? parent.$el.children : parent.$refs.hiddenColumns.children;
+    const columnIndex = this.getColumnElIndex(children, this.$el);
+
+    owner.store.commit('insertColumn', this.columnConfig, columnIndex, this.isSubColumn ? parent.columnConfig : null);
+  },
+
+  destroyed() {
+    if (!this.$parent) return;
+    const parent = this.$parent;
+    this.owner.store.commit('removeColumn', this.columnConfig, this.isSubColumn ? parent.columnConfig : null);
+  },
+
+  render(h) {
+    // slots 也要渲染，需要计算合并表头
+    return h('div', this.$slots.default);
   },
 
   methods: {
@@ -238,82 +316,5 @@ export default {
         });
       });
     }
-  },
-
-  components: {
-    ElCheckbox
-  },
-
-  beforeCreate() {
-    this.row = {};
-    this.column = {};
-    this.$index = 0;
-    this.columnId = '';
-  },
-
-  created() {
-    const parent = this.columnOrTableParent;
-    this.isSubColumn = this.owner !== parent;
-    this.columnId = (parent.tableId || parent.columnId) + '_column_' + columnIdSeed++;
-
-    const type = this.type || 'default';
-    const sortable = this.sortable === '' ? true : this.sortable;
-    const defaults = {
-      ...cellStarts[type],
-      id: this.columnId,
-      type: type,
-      property: this.prop || this.property,
-      align: this.realAlign,
-      headerAlign: this.realHeaderAlign,
-      showOverflowTooltip: this.showOverflowTooltip || this.showTooltipWhenOverflow,
-      // filter 相关属性
-      filterable: this.filters || this.filterMethod,
-      filteredValue: [],
-      filterPlacement: '',
-      isColumnGroup: false,
-      filterOpened: false,
-      // sort 相关属性
-      sortable: sortable,
-      // index 列
-      index: this.index
-    };
-
-    const basicProps = ['columnKey', 'label', 'className', 'labelClassName', 'type', 'renderHeader', 'formatter', 'fixed', 'resizable'];
-    const sortProps = ['sortMethod', 'sortBy', 'sortOrders'];
-    const selectProps = ['selectable', 'reserveSelection'];
-    const filterProps = ['filterMethod', 'filters', 'filterMultiple', 'filterOpened', 'filteredValue', 'filterPlacement'];
-
-    let column = this.getPropsData(basicProps, sortProps, selectProps, filterProps);
-    column = mergeOptions(defaults, column);
-
-    // 注意 compose 中函数执行的顺序是从右到左
-    const chains = compose(this.setColumnRenders, this.setColumnWidth, this.setColumnForcedProps);
-    column = chains(column);
-
-    this.columnConfig = column;
-
-    // 注册 watcher
-    this.registerNormalWatchers();
-    this.registerComplexWatchers();
-  },
-
-  mounted() {
-    const owner = this.owner;
-    const parent = this.columnOrTableParent;
-    const children = this.isSubColumn ? parent.$el.children : parent.$refs.hiddenColumns.children;
-    const columnIndex = this.getColumnElIndex(children, this.$el);
-
-    owner.store.commit('insertColumn', this.columnConfig, columnIndex, this.isSubColumn ? parent.columnConfig : null);
-  },
-
-  destroyed() {
-    if (!this.$parent) return;
-    const parent = this.$parent;
-    this.owner.store.commit('removeColumn', this.columnConfig, this.isSubColumn ? parent.columnConfig : null);
-  },
-
-  render(h) {
-    // slots 也要渲染，需要计算合并表头
-    return h('div', this.$slots.default);
   }
 };

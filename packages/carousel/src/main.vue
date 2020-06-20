@@ -162,6 +162,31 @@ export default {
     }
   },
 
+  created() {
+    this.throttledArrowClick = throttle(300, true, index => {
+      this.setActiveItem(index);
+    });
+    this.throttledIndicatorHover = throttle(300, index => {
+      this.handleIndicatorHover(index);
+    });
+  },
+
+  mounted() {
+    this.updateItems();
+    this.$nextTick(() => {
+      addResizeListener(this.$el, this.resetItemPosition);
+      if (this.initialIndex < this.items.length && this.initialIndex >= 0) {
+        this.activeIndex = this.initialIndex;
+      }
+      this.startTimer();
+    });
+  },
+
+  beforeDestroy() {
+    if (this.$el) removeResizeListener(this.$el, this.resetItemPosition);
+    this.pauseTimer();
+  },
+
   methods: {
     handleMouseEnter() {
       this.hover = true;
@@ -274,31 +299,6 @@ export default {
         this.activeIndex = index;
       }
     }
-  },
-
-  created() {
-    this.throttledArrowClick = throttle(300, true, index => {
-      this.setActiveItem(index);
-    });
-    this.throttledIndicatorHover = throttle(300, index => {
-      this.handleIndicatorHover(index);
-    });
-  },
-
-  mounted() {
-    this.updateItems();
-    this.$nextTick(() => {
-      addResizeListener(this.$el, this.resetItemPosition);
-      if (this.initialIndex < this.items.length && this.initialIndex >= 0) {
-        this.activeIndex = this.initialIndex;
-      }
-      this.startTimer();
-    });
-  },
-
-  beforeDestroy() {
-    if (this.$el) removeResizeListener(this.$el, this.resetItemPosition);
-    this.pauseTimer();
   }
 };
 </script>

@@ -37,6 +37,14 @@
       }
     },
 
+    created() {
+      //  this.$on 和 this.$emit  是配套的
+      //    this.$on : 监听当前实例上的自定义事件。
+      //    事件可以由vm.$emit触发。回调函数会接收所有传入事件触发函数的额外参数。
+      //      this.dispatch('ElCollapse', 'item-click', this); 利用的就是这个原理
+      this.$on('item-click', this.handleItemClick);
+    },
+
     methods: {
       setActiveNames(activeNames) {
         activeNames = [].concat(activeNames);
@@ -64,10 +72,6 @@
           this.setActiveNames(activeNames);
         }
       }
-    },
-
-    created() {
-      this.$on('item-click', this.handleItemClick);
     }
   };
 </script>

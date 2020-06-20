@@ -1,3 +1,12 @@
+## 学习点
+1. 标签的tabindex属性, 可以使用tab按键
+2. v-model子组件往父和爷渗透传值,   方法是: dispatch(封装的emit) (还是用事件 激发最外层组件监听的input事件 比如 `<el-checkbox v-model="checked" @input='a''>备选项</el-checkbox>`)
+    1. `<input>, <select>, 或 <textarea> 元素的 value 被修改时，会触发 input 事件。`
+    2. 有父ElCheckboxGroup的话:   this.dispatch('ElCheckboxGroup', 'input', [val])
+    1. 没的话, 直接  this.$emit('input', val);
+    
+
+
 ## Checkbox 多选框
 一组备选项中进行多选
 
@@ -271,6 +280,7 @@
 | 事件名称      | 说明    | 回调参数      |
 |---------- |-------- |---------- |
 | change  | 当绑定值变化时触发的事件 | 更新后的值 |
+| input  | 更新之前的钩子 (虽然这没写,但源码里有emit, input事件) | 更新后的值 |
 
 ### Checkbox-button Attributes
 | 参数      | 说明    | 类型      | 可选值       | 默认值   |

@@ -7,6 +7,7 @@
       class="el-drawer__wrapper"
       tabindex="-1"
       v-show="visible">
+      <!-- el-drawer__container 是遮罩层(暗色), 在内容的下面 -->
       <div
         class="el-drawer__container"
         :class="visible && 'el-drawer__open'"
@@ -146,6 +147,18 @@ export default {
       }
     }
   },
+  mounted() {
+    if (this.visible) {
+      this.rendered = true;
+      this.open();
+    }
+  },
+  destroyed() {
+    // if appendToBody is true, remove DOM node after destroy
+    if (this.appendToBody && this.$el && this.$el.parentNode) {
+      this.$el.parentNode.removeChild(this.$el);
+    }
+  },
   methods: {
     afterEnter() {
       this.$emit('opened');
@@ -163,6 +176,7 @@ export default {
         this.closed = true;
       }
     },
+    // 点击遮罩层   (el-drawer__container 是遮罩层(暗色), 在内容的下面)
     handleWrapperClick() {
       if (this.wrapperClosable) {
         this.closeDrawer();
@@ -180,18 +194,6 @@ export default {
       // pressing `ESC` will call this method, and also close the drawer.
       // This method also calls `beforeClose` if there was one.
       this.closeDrawer();
-    }
-  },
-  mounted() {
-    if (this.visible) {
-      this.rendered = true;
-      this.open();
-    }
-  },
-  destroyed() {
-    // if appendToBody is true, remove DOM node after destroy
-    if (this.appendToBody && this.$el && this.$el.parentNode) {
-      this.$el.parentNode.removeChild(this.$el);
     }
   }
 };

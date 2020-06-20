@@ -23,7 +23,9 @@ export default function() {
 
   const widthWithScroll = inner.offsetWidth;
   outer.parentNode.removeChild(outer);
+  // widthNoScroll的高度 极小-9999, widthWithScroll 100%宽度 + 有高度
   scrollBarWidth = widthNoScroll - widthWithScroll;
+  // debugger
 
-  return scrollBarWidth;
+  return scrollBarWidth; // 拿到当前环境的滚动条的宽度
 };

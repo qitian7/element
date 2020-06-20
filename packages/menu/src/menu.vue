@@ -7,33 +7,6 @@
   export default {
     name: 'ElMenu',
 
-    render (h) {
-      const component = (
-        <ul
-          role="menubar"
-          key={ +this.collapse }
-          style={{ backgroundColor: this.backgroundColor || '' }}
-          class={{
-            'el-menu--horizontal': this.mode === 'horizontal',
-            'el-menu--collapse': this.collapse,
-            "el-menu": true
-          }}
-        >
-          { this.$slots.default }
-        </ul>
-      );
-
-      if (this.collapseTransition) {
-        return (
-          <el-menu-collapse-transition>
-            { component }
-          </el-menu-collapse-transition>
-        );
-      } else {
-        return component;
-      }
-    },
-
     componentName: 'ElMenu',
 
     mixins: [emitter, Migrating],
@@ -97,6 +70,33 @@
       }
     },
 
+    render (h) {
+      const component = (
+        <ul
+          role="menubar"
+          key={ +this.collapse }
+          style={{ backgroundColor: this.backgroundColor || '' }}
+          class={{
+            'el-menu--horizontal': this.mode === 'horizontal',
+            'el-menu--collapse': this.collapse,
+            "el-menu": true
+          }}
+        >
+          { this.$slots.default }
+        </ul>
+      );
+
+      if (this.collapseTransition) {
+        return (
+          <el-menu-collapse-transition>
+            { component }
+          </el-menu-collapse-transition>
+        );
+      } else {
+        return component;
+      }
+    },
+
     props: {
       mode: {
         type: String,
@@ -156,6 +156,15 @@
         if (value) this.openedMenus = [];
         this.broadcast('ElSubmenu', 'toggle-collapse', value);
       }
+    },
+    mounted() {
+      this.initOpenedMenu();
+      this.$on('item-click', this.handleItemClick);
+      this.$on('submenu-click', this.handleSubmenuClick);
+      if (this.mode === 'horizontal') {
+        new Menubar(this.$el); // eslint-disable-line
+      }
+      this.$watch('items', this.updateActiveIndex);
     },
     methods: {
       updateActiveIndex(val) {
@@ -272,7 +281,7 @@
           this.routeToItem(item, (error) => {
             this.activeIndex = oldActiveIndex;
             if (error) {
-              // vue-router 3.1.0+ push/replace cause NavigationDuplicated error 
+              // vue-router 3.1.0+ push/replace cause NavigationDuplicated error
               // https://github.com/ElemeFE/element/issues/17044
               if (error.name === 'NavigationDuplicated') return
               console.error(error)
@@ -311,15 +320,6 @@
       close(index) {
         this.closeMenu(index);
       }
-    },
-    mounted() {
-      this.initOpenedMenu();
-      this.$on('item-click', this.handleItemClick);
-      this.$on('submenu-click', this.handleSubmenuClick);
-      if (this.mode === 'horizontal') {
-        new Menubar(this.$el); // eslint-disable-line
-      }
-      this.$watch('items', this.updateActiveIndex);
     }
   };
 </script>

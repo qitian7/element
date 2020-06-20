@@ -78,6 +78,7 @@
     },
     computed: {
       isGroup() {
+        // 一直往父级去找, 如果有<el-radio-group 则返回true
         let parent = this.$parent;
         while (parent) {
           if (parent.$options.componentName !== 'ElRadioGroup') {
@@ -89,8 +90,10 @@
         }
         return false;
       },
+      // v-model绑定的值, 按钮一点击, 自动会触发set
       model: {
         get() {
+          // <el-radio 组件如果有 被<el-radio-group(父组件)包在里面, 则此处返回父组件的v-model
           return this.isGroup ? this._radioGroup.value : this.value;
         },
         set(val) {
@@ -122,9 +125,10 @@
     },
 
     methods: {
+      // v-model绑定的值, 按钮一点击, 自动会触发set, 然后触发change
       handleChange() {
         this.$nextTick(() => {
-          this.$emit('change', this.model);
+          this.$emit('change', this.model); // 触发父组件的方法
           this.isGroup && this.dispatch('ElRadioGroup', 'handleChange', this.model);
         });
       }

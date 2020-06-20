@@ -15,6 +15,7 @@
     @mouseenter="hovering = true"
     @mouseleave="hovering = false"
   >
+    <!-- input -->
     <template v-if="type !== 'textarea'">
       <!-- 前置元素 -->
       <div class="el-input-group__prepend" v-if="$slots.prepend">
@@ -84,6 +85,8 @@
         <slot name="append"></slot>
       </div>
     </template>
+
+    <!-- 文本域 type="textarea" -->
     <textarea
       v-else
       :tabindex="tabindex"
@@ -218,7 +221,7 @@
       inputDisabled() {
         return this.disabled || (this.elForm || {}).disabled;
       },
-      nativeInputValue() {
+      nativeInputValue() { // v-model 绑定的值
         return this.value === null || this.value === undefined ? '' : String(this.value);
       },
       showClear() {
@@ -243,6 +246,7 @@
           !this.showPassword;
       },
       upperLimit() {
+        // maxlength没有写在props里面, 所以可以用this.$attrs拿 (此处并不是要传递给子组件)
         return this.$attrs.maxlength;
       },
       textLength() {
@@ -282,6 +286,20 @@
           this.updateIconOffset();
         });
       }
+    },
+
+    created() {
+      this.$on('inputSelect', this.select);
+    },
+
+    mounted() {
+      this.setNativeInputValue();
+      this.resizeTextarea();
+      this.updateIconOffset();
+    },
+
+    updated() {
+      this.$nextTick(this.updateIconOffset);
     },
 
     methods: {
@@ -327,7 +345,7 @@
 
         this.textareaCalcStyle = calcTextareaHeight(this.$refs.textarea, minRows, maxRows);
       },
-      setNativeInputValue() {
+      setNativeInputValue() { // 数据 和 input的value 同步, 一般情况是同步的(此处容错)
         const input = this.getInput();
         if (!input) return;
         if (input.value === this.nativeInputValue) return;
@@ -337,7 +355,7 @@
         this.focused = true;
         this.$emit('focus', event);
       },
-      handleCompositionStart() {
+      handleCompositionStart(e) {
         this.isComposing = true;
       },
       handleCompositionUpdate(event) {
@@ -416,20 +434,6 @@
           this.isWordLimitVisible ||
           (this.validateState && this.needStatusIcon);
       }
-    },
-
-    created() {
-      this.$on('inputSelect', this.select);
-    },
-
-    mounted() {
-      this.setNativeInputValue();
-      this.resizeTextarea();
-      this.updateIconOffset();
-    },
-
-    updated() {
-      this.$nextTick(this.updateIconOffset);
     }
   };
 </script>

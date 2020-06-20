@@ -28,5 +28,6 @@ themes.forEach((theme) => {
       console.log(theme, ' 创建遗漏的 ', fileName, ' 文件');
     }
   });
+  // '../../packages/theme-chalk/src/index.scss'  动态生成 index.scss ( 根据components.json的key )
   fs.writeFileSync(path.resolve(basepath, theme, 'src', isSCSS ? 'index.scss' : 'index.css'), indexContent);
 });

@@ -113,8 +113,8 @@ export default {
       title: 'Back' // to be translated
     },
     popconfirm: {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Отмена'
+      confirmButtonText: 'Yes', // to be translated
+      cancelButtonText: 'No' // to be translated
     }
   }
 };

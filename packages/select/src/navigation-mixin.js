@@ -23,6 +23,7 @@ export default {
   },
 
   methods: {
+    // 键盘按下: option的active往下走(跳过disabled 或是 组名 ), 并且滚动条也移动
     navigateOptions(direction) {
       if (!this.visible) {
         this.visible = true;
@@ -42,6 +43,7 @@ export default {
           }
         }
         const option = this.options[this.hoverIndex];
+        // 如果某个 option 是disabled或是 组名 则跳过他们
         if (option.disabled === true ||
           option.groupDisabled === true ||
           !option.visible) {

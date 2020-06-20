@@ -2,6 +2,7 @@
 
 import Vue from 'vue';
 
+// 当前 Vue 实例是否运行于服务器 (是否是服务端渲染)
 const isServer = Vue.prototype.$isServer;
 const SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
 const MOZ_HACK_REGEXP = /^moz([A-Z])/;
@@ -117,6 +118,7 @@ export function removeClass(el, cls) {
 };
 
 /* istanbul ignore next */
+// 获取 样式 对应的值
 export const getStyle = ieVersion < 9 ? function(element, styleName) {
   if (isServer) return;
   if (!element || !styleName) return null;
@@ -146,7 +148,11 @@ export const getStyle = ieVersion < 9 ? function(element, styleName) {
     styleName = 'cssFloat';
   }
   try {
-    var computed = document.defaultView.getComputedStyle(element, '');
+    // document.defaultView 在浏览器中，该属性返回当前 document 对象所关联的 window 对象，如果没有，会返回 null。
+    // window.getComputedStyle() 方法用于获取指定元素的 CSS 样式。
+    //    获取的样式是元素在浏览器中最终渲染效果的样式。
+    //    例如: window.getComputedStyle(elem, null).getPropertyValue("background-color")
+    var computed = document.defaultView.getComputedStyle(element, ''); // 返回一个对象
     return element.style[styleName] || computed ? computed[styleName] : null;
   } catch (e) {
     return element.style[styleName];
@@ -186,6 +192,7 @@ export const isScroll = (el, vertical) => {
   return overflow.match(/(scroll|auto)/);
 };
 
+// (一直往父级找, 直到)找到有滚动条的一层     overflow-y 或 overflow   auto
 export const getScrollContainer = (el, vertical) => {
   if (isServer) return;
 

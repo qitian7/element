@@ -61,6 +61,7 @@
         <slot name="append"></slot>
       </div>
     </div>
+
     <div
       v-if="showSummary"
       v-show="data && data.length > 0"
@@ -78,6 +79,7 @@
         }">
       </table-footer>
     </div>
+
     <div
       v-if="fixedColumns.length > 0"
       v-mousewheel="handleFixedMousewheel"
@@ -139,6 +141,7 @@
           }"></table-footer>
       </div>
     </div>
+
     <div
       v-if="rightFixedColumns.length > 0"
       v-mousewheel="handleFixedMousewheel"
@@ -200,6 +203,7 @@
           }"></table-footer>
       </div>
     </div>
+
     <div
       v-if="rightFixedColumns.length > 0"
       class="el-table__fixed-right-patch"
@@ -339,6 +343,215 @@
       TableFooter,
       TableBody,
       ElCheckbox
+    },
+
+    computed: {
+      tableSize() {
+        return this.size || (this.$ELEMENT || {}).size;
+      },
+
+      bodyWrapper() {
+        return this.$refs.bodyWrapper;
+      },
+
+      shouldUpdateHeight() {
+        return this.height ||
+          this.maxHeight ||
+          this.fixedColumns.length > 0 ||
+          this.rightFixedColumns.length > 0;
+      },
+
+      // 动态生成table区域宽度(因为有可能出现滚动条)
+      bodyWidth() {
+        const { bodyWidth, scrollY, gutterWidth } = this.layout;
+        return bodyWidth ? bodyWidth - (scrollY ? gutterWidth : 0) + 'px' : '';
+      },
+
+      bodyHeight() {
+        const { headerHeight = 0, bodyHeight, footerHeight = 0} = this.layout;
+        if (this.height) {
+          return {
+            height: bodyHeight ? bodyHeight + 'px' : ''
+          };
+        } else if (this.maxHeight) {
+          const maxHeight = parseHeight(this.maxHeight);
+          if (typeof maxHeight === 'number') {
+            return {
+              'max-height': (maxHeight - footerHeight - (this.showHeader ? headerHeight : 0)) + 'px'
+            };
+          }
+        }
+        return {};
+      },
+
+      fixedBodyHeight() {
+        if (this.height) {
+          return {
+            height: this.layout.fixedBodyHeight ? this.layout.fixedBodyHeight + 'px' : ''
+          };
+        } else if (this.maxHeight) {
+          let maxHeight = parseHeight(this.maxHeight);
+          if (typeof maxHeight === 'number') {
+            maxHeight = this.layout.scrollX ? maxHeight - this.layout.gutterWidth : maxHeight;
+            if (this.showHeader) {
+              maxHeight -= this.layout.headerHeight;
+            }
+            maxHeight -= this.layout.footerHeight;
+            return {
+              'max-height': maxHeight + 'px'
+            };
+          }
+        }
+        return {};
+      },
+
+      fixedHeight() {
+        if (this.maxHeight) {
+          if (this.showSummary) {
+            return {
+              bottom: 0
+            };
+          }
+          return {
+            bottom: (this.layout.scrollX && this.data.length) ? this.layout.gutterWidth + 'px' : ''
+          };
+        } else {
+          if (this.showSummary) {
+            return {
+              height: this.layout.tableHeight ? this.layout.tableHeight + 'px' : ''
+            };
+          }
+          return {
+            height: this.layout.viewportHeight ? this.layout.viewportHeight + 'px' : ''
+          };
+        }
+      },
+
+      emptyBlockStyle() {
+        if (this.data && this.data.length) return null;
+        let height = '100%';
+        if (this.layout.appendHeight) {
+          height = `calc(100% - ${this.layout.appendHeight}px)`;
+        }
+        return {
+          width: this.bodyWidth,
+          height
+        };
+      },
+
+      ...mapStates({
+        selection: 'selection',
+        columns: 'columns',
+        tableData: 'data',
+        fixedColumns: 'fixedColumns',
+        rightFixedColumns: 'rightFixedColumns'
+      })
+    },
+
+    watch: {
+      height: {
+        immediate: true,
+        handler(value) {
+          this.layout.setHeight(value);
+        }
+      },
+
+      maxHeight: {
+        immediate: true,
+        handler(value) {
+          this.layout.setMaxHeight(value);
+        }
+      },
+
+      currentRowKey: {
+        immediate: true,
+        handler(value) {
+          if (!this.rowKey) return;
+          this.store.setCurrentRowKey(value);
+        }
+      },
+
+      data: {
+        immediate: true,
+        handler(value) {
+          this.store.commit('setData', value);
+        }
+      },
+
+      expandRowKeys: {
+        immediate: true,
+        handler(newVal) {
+          if (newVal) {
+            this.store.setExpandRowKeysAdapter(newVal);
+          }
+        }
+      }
+    },
+
+    created() {
+      this.tableId = 'el-table_' + tableIdSeed++;
+      this.debouncedUpdateLayout = debounce(50, this.doLayout());
+    },
+
+    mounted() {
+      this.bindEvents();
+      this.store.updateColumns();
+      this.doLayout();
+
+      this.resizeState = {
+        width: this.$el.offsetWidth,
+        height: this.$el.offsetHeight
+      };
+
+      // init filters
+      this.store.states.columns.forEach(column => {
+        if (column.filteredValue && column.filteredValue.length) {
+          this.store.commit('filterChange', {
+            column,
+            values: column.filteredValue,
+            silent: true
+          });
+        }
+      });
+
+      this.$ready = true;
+    },
+
+    destroyed() {
+      this.unbindEvents();
+    },
+
+    data() {
+      const { hasChildren = 'hasChildren', children = 'children' } = this.treeProps;
+      this.store = createStore(this, {
+        rowKey: this.rowKey,
+        defaultExpandAll: this.defaultExpandAll,
+        selectOnIndeterminate: this.selectOnIndeterminate,
+        // TreeTable 的相关配置
+        indent: this.indent,
+        lazy: this.lazy,
+        lazyColumnIdentifier: hasChildren,
+        childrenColumnName: children
+      });
+      const layout = new TableLayout({
+        store: this.store,
+        table: this,
+        fit: this.fit,
+        showHeader: this.showHeader
+      });
+      return {
+        layout,
+        isHidden: false,
+        renderExpanded: null,
+        resizeProxyVisible: false,
+        resizeState: {
+          width: null,
+          height: null
+        },
+        // 是否拥有多级表头
+        isGroup: false,
+        scrollPosition: 'left'
+      };
     },
 
     methods: {
@@ -481,214 +694,6 @@
         this.store.commit('toggleAllSelection');
       }
 
-    },
-
-    computed: {
-      tableSize() {
-        return this.size || (this.$ELEMENT || {}).size;
-      },
-
-      bodyWrapper() {
-        return this.$refs.bodyWrapper;
-      },
-
-      shouldUpdateHeight() {
-        return this.height ||
-          this.maxHeight ||
-          this.fixedColumns.length > 0 ||
-          this.rightFixedColumns.length > 0;
-      },
-
-      bodyWidth() {
-        const { bodyWidth, scrollY, gutterWidth } = this.layout;
-        return bodyWidth ? bodyWidth - (scrollY ? gutterWidth : 0) + 'px' : '';
-      },
-
-      bodyHeight() {
-        const { headerHeight = 0, bodyHeight, footerHeight = 0} = this.layout;
-        if (this.height) {
-          return {
-            height: bodyHeight ? bodyHeight + 'px' : ''
-          };
-        } else if (this.maxHeight) {
-          const maxHeight = parseHeight(this.maxHeight);
-          if (typeof maxHeight === 'number') {
-            return {
-              'max-height': (maxHeight - footerHeight - (this.showHeader ? headerHeight : 0)) + 'px'
-            };
-          }
-        }
-        return {};
-      },
-
-      fixedBodyHeight() {
-        if (this.height) {
-          return {
-            height: this.layout.fixedBodyHeight ? this.layout.fixedBodyHeight + 'px' : ''
-          };
-        } else if (this.maxHeight) {
-          let maxHeight = parseHeight(this.maxHeight);
-          if (typeof maxHeight === 'number') {
-            maxHeight = this.layout.scrollX ? maxHeight - this.layout.gutterWidth : maxHeight;
-            if (this.showHeader) {
-              maxHeight -= this.layout.headerHeight;
-            }
-            maxHeight -= this.layout.footerHeight;
-            return {
-              'max-height': maxHeight + 'px'
-            };
-          }
-        }
-        return {};
-      },
-
-      fixedHeight() {
-        if (this.maxHeight) {
-          if (this.showSummary) {
-            return {
-              bottom: 0
-            };
-          }
-          return {
-            bottom: (this.layout.scrollX && this.data.length) ? this.layout.gutterWidth + 'px' : ''
-          };
-        } else {
-          if (this.showSummary) {
-            return {
-              height: this.layout.tableHeight ? this.layout.tableHeight + 'px' : ''
-            };
-          }
-          return {
-            height: this.layout.viewportHeight ? this.layout.viewportHeight + 'px' : ''
-          };
-        }
-      },
-
-      emptyBlockStyle() {
-        if (this.data && this.data.length) return null;
-        let height = '100%';
-        if (this.layout.appendHeight) {
-          height = `calc(100% - ${this.layout.appendHeight}px)`;
-        }
-        return {
-          width: this.bodyWidth,
-          height
-        };
-      },
-
-      ...mapStates({
-        selection: 'selection',
-        columns: 'columns',
-        tableData: 'data',
-        fixedColumns: 'fixedColumns',
-        rightFixedColumns: 'rightFixedColumns'
-      })
-    },
-
-    watch: {
-      height: {
-        immediate: true,
-        handler(value) {
-          this.layout.setHeight(value);
-        }
-      },
-
-      maxHeight: {
-        immediate: true,
-        handler(value) {
-          this.layout.setMaxHeight(value);
-        }
-      },
-
-      currentRowKey: {
-        immediate: true,
-        handler(value) {
-          if (!this.rowKey) return;
-          this.store.setCurrentRowKey(value);
-        }
-      },
-
-      data: {
-        immediate: true,
-        handler(value) {
-          this.store.commit('setData', value);
-        }
-      },
-
-      expandRowKeys: {
-        immediate: true,
-        handler(newVal) {
-          if (newVal) {
-            this.store.setExpandRowKeysAdapter(newVal);
-          }
-        }
-      }
-    },
-
-    created() {
-      this.tableId = 'el-table_' + tableIdSeed++;
-      this.debouncedUpdateLayout = debounce(50, () => this.doLayout());
-    },
-
-    mounted() {
-      this.bindEvents();
-      this.store.updateColumns();
-      this.doLayout();
-
-      this.resizeState = {
-        width: this.$el.offsetWidth,
-        height: this.$el.offsetHeight
-      };
-
-      // init filters
-      this.store.states.columns.forEach(column => {
-        if (column.filteredValue && column.filteredValue.length) {
-          this.store.commit('filterChange', {
-            column,
-            values: column.filteredValue,
-            silent: true
-          });
-        }
-      });
-
-      this.$ready = true;
-    },
-
-    destroyed() {
-      this.unbindEvents();
-    },
-
-    data() {
-      const { hasChildren = 'hasChildren', children = 'children' } = this.treeProps;
-      this.store = createStore(this, {
-        rowKey: this.rowKey,
-        defaultExpandAll: this.defaultExpandAll,
-        selectOnIndeterminate: this.selectOnIndeterminate,
-        // TreeTable 的相关配置
-        indent: this.indent,
-        lazy: this.lazy,
-        lazyColumnIdentifier: hasChildren,
-        childrenColumnName: children
-      });
-      const layout = new TableLayout({
-        store: this.store,
-        table: this,
-        fit: this.fit,
-        showHeader: this.showHeader
-      });
-      return {
-        layout,
-        isHidden: false,
-        renderExpanded: null,
-        resizeProxyVisible: false,
-        resizeState: {
-          width: null,
-          height: null
-        },
-        // 是否拥有多级表头
-        isGroup: false,
-        scrollPosition: 'left'
-      };
     }
   };
 </script>

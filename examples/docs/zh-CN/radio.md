@@ -1,3 +1,36 @@
+## 学习点
+1. 外层v-model 包里层v-model
+```jsx
+// v-model绑定的值, 按钮一点击, 自动会触发set
+computed: {
+  model: {
+    get() {
+      // <el-radio 组件如果有 被<el-radio-group(父组件)包在里面, 则此处返回父组件的v-model
+      return this.isGroup ? this._radioGroup.value : this.value;
+    },
+    set(val) {
+      if (this.isGroup) {
+        this.dispatch('ElRadioGroup', 'input', [val]);
+      } else {
+        this.$emit('input', val);
+      }
+      this.$refs.radio && (this.$refs.radio.checked = this.model === this.label);
+    }
+  }  
+}
+// 触发父组件的方法, emit
+// v-model绑定的值, 按钮一点击, 自动会触发set, 然后触发change
+handleChange() {
+  this.$nextTick(() => {
+      this.$emit('change', this.model); // 触发父组件的方法
+      this.isGroup && this.dispatch('ElRadioGroup', 'handleChange', this.model);
+    });
+  }
+}
+```
+2. 标签选择器  `const radios = this.$el.querySelectorAll('[type=radio]');`
+
+
 ## Radio 单选框
 
 在一组备选项中进行单选

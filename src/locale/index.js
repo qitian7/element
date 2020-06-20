@@ -7,6 +7,7 @@ const format = Format(Vue);
 let lang = defaultLang;
 let merged = false;
 let i18nHandler = function() {
+  // Object.getPrototypeOf()  方法返回指定对象的原型
   const vuei18n = Object.getPrototypeOf(this || Vue).$t;
   if (typeof vuei18n === 'function' && !!Vue.locale) {
     if (!merged) {

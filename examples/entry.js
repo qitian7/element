@@ -13,7 +13,7 @@ import title from './i18n/title';
 
 import 'packages/theme-chalk/src/index.scss';
 import './demo-styles/index.scss';
-import './assets/styles/common.css';
+import './assets/styles/common.scss';
 import './assets/styles/fonts/style.css';
 import icon from './icon.json';
 
@@ -26,9 +26,8 @@ Vue.component('side-nav', SideNav);
 Vue.component('footer-nav', FooterNav);
 
 const globalEle = new Vue({
-  data: { $isEle: false } // 是否 ele 用户
+  data: { $isEle: false } // $isEle此处关联到一个接口, 判断是否 ele 开发者
 });
-
 Vue.mixin({
   computed: {
     $isEle: {
@@ -48,13 +47,18 @@ const router = new VueRouter({
 
 router.afterEach(route => {
   // https://github.com/highlightjs/highlight.js/issues/909#issuecomment-131686186
+  // highlightjs 给代码加上高亮 显示
   Vue.nextTick(() => {
+    // 获取当前 单页面的 代码块 (有按需加载)
     const blocks = document.querySelectorAll('pre code:not(.hljs)');
+    // 给代码块 加上高亮 显示
     Array.prototype.forEach.call(blocks, hljs.highlightBlock);
   });
+  // 根据路由的name, 替换网站的title
   const data = title[route.meta.lang];
   for (let val in data) {
     if (new RegExp('^' + val, 'g').test(route.name)) {
+      // 根据路由的name, 替换网站的title
       document.title = data[val];
       return;
     }

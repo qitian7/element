@@ -15,6 +15,7 @@ Dialog 弹出一个对话框，适合需要定制性更大的场景。
   :visible.sync="dialogVisible"
   width="30%"
   :before-close="handleClose">
+  <h1 slot="title">123</h1>
   <span>这是一段信息</span>
   <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
@@ -40,6 +41,12 @@ Dialog 弹出一个对话框，适合需要定制性更大的场景。
     }
   };
 </script>
+<style>
+  .el-dialog .el-dialog__header .el-dialog__headerbtn .el-dialog__close:hover {
+    color: red;
+  }
+</style>
+
 ```
 :::
 

@@ -15,6 +15,7 @@ let seed = 0;
 
 function createDocumentHandler(el, binding, vnode) {
   return function(mouseup = {}, mousedown = {}) {
+    // 鼠标点击的地方, 不能存在 popperElm, 否则 就不会执行关闭弹窗
     if (!vnode ||
       !vnode.context ||
       !mouseup.target ||
@@ -29,7 +30,7 @@ function createDocumentHandler(el, binding, vnode) {
     if (binding.expression &&
       el[ctx].methodName &&
       vnode.context[el[ctx].methodName]) {
-      vnode.context[el[ctx].methodName]();
+      vnode.context[el[ctx].methodName](); // 执行v-directives绑定的函数
     } else {
       el[ctx].bindingFn && el[ctx].bindingFn();
     }
@@ -45,6 +46,11 @@ function createDocumentHandler(el, binding, vnode) {
  * ```
  */
 export default {
+  /**
+   *  el: dom node:  是绑定的dom对象
+   *  binding: object: 里有v-xx的信息
+   *  vnode: 虚拟vue节点: 里面的 vnode.context 等于 当前组件作用域的this, 比如select.vue里的this
+   */
   bind(el, binding, vnode) {
     nodeList.push(el);
     const id = seed++;

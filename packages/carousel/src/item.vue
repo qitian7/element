@@ -46,6 +46,29 @@
       };
     },
 
+    computed: {
+      parentDirection() {
+        return this.$parent.direction;
+      },
+
+      itemStyle() {
+        const translateType = this.parentDirection === 'vertical' ? 'translateY' : 'translateX';
+        const value = `${translateType}(${ this.translate }px) scale(${ this.scale })`;
+        const style = {
+          transform: value
+        };
+        return autoprefixer(style);
+      }
+    },
+
+    created() {
+      this.$parent && this.$parent.updateItems();
+    },
+
+    destroyed() {
+      this.$parent && this.$parent.updateItems();
+    },
+
     methods: {
       processIndex(index, activeIndex, length) {
         if (activeIndex === 0 && index === length - 1) {
@@ -88,7 +111,7 @@
         }
         if (parentType === 'card') {
           if (parentDirection === 'vertical') {
-            console.warn('[Element Warn][Carousel]vertical direction is not supported in card mode');
+            console.warn('[Element Warn][Carousel]vertical directionis not supported in card mode');
           }
           this.inStage = Math.round(Math.abs(index - activeIndex)) <= 1;
           this.active = index === activeIndex;
@@ -109,29 +132,6 @@
           parent.setActiveItem(index);
         }
       }
-    },
-
-    computed: {
-      parentDirection() {
-        return this.$parent.direction;
-      },
-
-      itemStyle() {
-        const translateType = this.parentDirection === 'vertical' ? 'translateY' : 'translateX';
-        const value = `${translateType}(${ this.translate }px) scale(${ this.scale })`;
-        const style = {
-          transform: value
-        };
-        return autoprefixer(style);
-      }
-    },
-
-    created() {
-      this.$parent && this.$parent.updateItems();
-    },
-
-    destroyed() {
-      this.$parent && this.$parent.updateItems();
     }
   };
 </script>

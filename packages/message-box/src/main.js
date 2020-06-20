@@ -68,6 +68,10 @@ const defaultCallback = action => {
 };
 
 const initInstance = () => {
+  /** 把一个 .vue文件, 用 Vue.extend(msgboxVue) ,挂到spa的全局Vue下面
+   *     然后new 初始化一下  成了instance(vue实例, .vue文件内的this 指向就是这个实例)
+   *     instance.$el 就是这个vue实例的dom了
+   */
   instance = new MessageBoxConstructor({
     el: document.createElement('div')
   });
@@ -75,6 +79,8 @@ const initInstance = () => {
   instance.callback = defaultCallback;
 };
 
+// 1. 读msgQueue里的参数, 并挂到 .vue实例上去, 然后触发对应的.vue内的内容.(动态加class,header,body,foot 内容)
+// 2. 最后 document.body.appendChild(instance.$el);
 const showNextMsg = () => {
   if (!instance) {
     initInstance();
@@ -111,7 +117,11 @@ const showNextMsg = () => {
           instance[prop] = true;
         }
       });
+
+      // instance.$el 就是这个vue实例的dom
       document.body.appendChild(instance.$el);
+      // 上面一行类似下面 (把实例挂载在body下)
+      // instance.$mount(document.body.createElement('div'))
 
       Vue.nextTick(() => {
         instance.visible = true;
@@ -120,6 +130,7 @@ const showNextMsg = () => {
   }
 };
 
+// 作用: 把用户配的参数, msgQueue.push(参数)
 const MessageBox = function(options, callback) {
   if (Vue.prototype.$isServer) return;
   if (typeof options === 'string' || isVNode(options)) {
@@ -158,6 +169,17 @@ MessageBox.setDefaults = defaults => {
   MessageBox.defaults = defaults;
 };
 
+/**
+    this.$alert('这是一段内容', '标题名称', {
+      confirmButtonText: '确定',
+      callback: action => {
+        this.$message({
+          type: 'info',
+          message: `action: ${ action }`
+        });
+      }
+    });
+ */
 MessageBox.alert = (message, title, options) => {
   if (typeof title === 'object') {
     options = title;
